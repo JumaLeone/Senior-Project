@@ -1,0 +1,179 @@
+/*Global Reset*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 100px auto;
+    padding: 0 2rem;
+}
+
+#notificationsTable {
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#notificationsTable thead th {
+    background: #f8f9fa;
+    color: #374151;
+    padding: 1rem;
+    text-align: left;
+}
+
+#notificationsTable tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.delete-btn {
+    background-color: #2980b9;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #2471a3;
+}
+
+.custom-navbar {
+    background-color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.custom-logo {
+    color: #2980b9;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.custom-menu ul {
+    display: flex;
+    list-style: none;
+    gap: 8rem;
+}
+
+.custom-menu a {
+    text-decoration: none;
+    color: #374151;
+}
+
+.custom-btn {
+    background-color: #2980b9;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.custom-search-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.custom-search-container form {
+    display: flex;
+    gap: 1rem;
+}
+
+.custom-search-container input,
+.custom-search-container select {
+    padding: 0.5rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.375rem;
+}
+
+.custom-search-container input {
+    flex: 1;
+}
+
+.custom-properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.custom-property-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 400px; /* Fixed height for cards */
+}
+
+.custom-property-image {
+    width: 100%;
+    height: 200px; /* Fixed height for images */
+    object-fit: cover;
+    display: block;
+}
+
+.custom-property-details {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-property-type {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.custom-property-location {
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.custom-property-specs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.custom-property-specs span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.custom-property-price {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.custom-buy-now {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: auto; /* Push button to bottom */
+}
+
+.custom-buy-now:hover {
+    background-color: #2980b9;
+}
