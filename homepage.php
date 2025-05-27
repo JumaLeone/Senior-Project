@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="./css/homepage-style.css">
     <title>KeyNest: Allocation System</title>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar">
@@ -20,6 +21,7 @@
             </ul>
         </div>
         <a href="logout.php" class="btn">LOGOUT</a>
+        <div class="menu-toggle">☰</div>
     </nav>
 
     <section class="slideshow">
@@ -106,26 +108,37 @@
         </div
     </footer>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
+   <script>
+    // Slideshow functionality
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
 
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            currentSlide = (index + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        currentSlide = (index + slides.length) % slides.length;
+        slides[currentSlide].classList.add('active');
+    }
 
-        function nextSlide() {
-            showSlide(currentSlide + 1);
-        }
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
 
-        function previousSlide() {
-            showSlide(currentSlide - 1);
-        }
+    function previousSlide() {
+        showSlide(currentSlide - 1);
+    }
 
-        setInterval(nextSlide, 5000);
-    </script>
+    setInterval(nextSlide, 5000);
+
+    // Mobile menu toggle
+    const toggleBtn = document.querySelector('.menu-toggle');
+    const menuList = document.querySelector('.menu ul');
+
+    toggleBtn.addEventListener('click', () => {
+        menuList.classList.toggle('show');
+    });
+</script>
+
+
 </body>
 </html>
 
