@@ -19,6 +19,7 @@ if ($notifications === false) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,6 +31,7 @@ if ($notifications === false) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
     <nav class="navbar">
         <a href="homepage.php" class="logo">KeyNest</a>
@@ -56,15 +58,15 @@ if ($notifications === false) {
                 </tr>
             </thead>
             <tbody>
-            <?php while ($notif = sqlsrv_fetch_array($notifications, SQLSRV_FETCH_ASSOC)) { ?>
-    <tr>
-        <td><?= htmlspecialchars($notif['message']) ?></td>
-        <td><?= $notif['date_created'] ? $notif['date_created']->format('Y-m-d H:i:s') : 'N/A' ?></td>
-        <td>
-            <button onclick="deleteNotification(<?= $notif['id'] ?>)" class="delete-btn">Delete</button>
-        </td>
-    </tr>
-<?php } ?>
+                <?php while ($notif = sqlsrv_fetch_array($notifications, SQLSRV_FETCH_ASSOC)) { ?>
+                    <tr>
+                        <td><?= htmlspecialchars($notif['message']) ?></td>
+                        <td><?= $notif['date_created'] ? $notif['date_created']->format('Y-m-d H:i:s') : 'N/A' ?></td>
+                        <td>
+                            <button onclick="deleteNotification(<?= $notif['id'] ?>)" class="delete-btn">Delete</button>
+                        </td>
+                    </tr>
+                <?php } ?>
 
 
             </tbody>
@@ -74,35 +76,39 @@ if ($notifications === false) {
     <script>
         $(document).ready(function() {
             $('#notificationsTable').DataTable({
-                order: [[1, 'desc']]
+                order: [
+                    [1, 'desc']
+                ]
             });
         });
+
         function deleteNotification(id) {
-    Swal.fire({
-        title: 'Delete Notification?',
-        text: "This action cannot be undone",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Delete'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'deleteNotification.php';
-            
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'id';
-            input.value = id;
-            
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
+            Swal.fire({
+                title: 'Delete Notification?',
+                text: "This action cannot be undone",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'deleteNotification.php';
+
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'id';
+                    input.value = id;
+
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         }
-    });
-}
-   </script>
+    </script>
 </body>
+
 </html>

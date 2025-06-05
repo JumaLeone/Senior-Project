@@ -2,75 +2,62 @@
 
 include 'connect.php';
 
-class Users {
+class Users
+{
     private $email;
     private $username;
     private $password;
-    private $conn;
+    public $conn;
 
-    // Constructor with database connection
-    public function __construct($email, $username, $password) {
+    public function __construct($email, $username, $password, $conn)
+    {
         $this->email = $email;
         $this->username = $username;
         $this->password = $password;
-        $this->conn = $this->getDbConnection(); // Establishing connection
+        $this->conn = $conn;
     }
 
-    // Database connection function using PDO for MSSQL
-    private function getDbConnection() {
-        try {
-            // Replace with your actual MSSQL connection details
-            $dsn = "sqlsrv:server=;
-            Database=your_database";
-            $username = "your_username";
-            $password = "your_password";
-            $conn = new PDO($dsn, $username, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $conn;
-        } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
-        }
-    }
-
-    // Getter for email
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    // Getter for username
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
-    // Getter for password
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
-    // Method to insert user into the database
-    public function insertUser() {
-        $query = "INSERT INTO Users (email, username, password) VALUES (:email, :username, :password)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':email', $this->email);
-        $stmt->bindParam(':username', $this->username);
-        $stmt->bindParam(':password', $this->password);
-        try {
-            $stmt->execute();
+    public function insertUser()
+    {
+        $query = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+        $stmt = sqlsrv_query($this->conn, $query, [$this->email, $this->username, $this->password]);
+
+        if ($stmt) {
             echo "User inserted successfully.";
-        } catch (PDOException $e) {
-            echo "Error inserting user: " . $e->getMessage();
+        } else {
+            echo "Error inserting user: ";
+            die(print_r(sqlsrv_errors(), true));
         }
     }
 }
 
-abstract class BaseMethod {
+// --- BASE METHOD ---
+abstract class BaseMethod
+{
     protected $conn;
 
-    public function __construct($conn) {
+    public function __construct($conn)
+    {
         $this->conn = $conn;
     }
 
-    protected function showAlert($title, $message, $type) {
+    protected function showAlert($title, $message, $type)
+    {
         echo "
         <!DOCTYPE html>
         <html lang='en'>
@@ -97,12 +84,13 @@ abstract class BaseMethod {
     abstract public function execute($data);
 }
 
-class SignUp extends BaseMethod {
-    public function execute($user) {
+// --- SIGN UP ---
+class SignUp extends BaseMethod
+{
+    public function execute($user)
+    {
         $checkEmailQuery = "SELECT * FROM users WHERE email = ?";
-        $params = array($user->getEmail());
-
-        // Use sqlsrv_query with parameters
+        $params = [$user->getEmail()];
         $stmt = sqlsrv_query($this->conn, $checkEmailQuery, $params);
 
         if ($stmt === false) {
@@ -110,22 +98,22 @@ class SignUp extends BaseMethod {
             die(print_r(sqlsrv_errors(), true));
         }
 
-        // Count rows
-        $rows = 0;
+        $exists = false;
         while (sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-            $rows++;
+            $exists = true;
+            break;
         }
 
-        if ($rows > 0) {
+        if ($exists) {
             $this->showAlert('Error!', 'Email already exists!', 'error');
         } else {
             $hashedPassword = password_hash($user->getPassword(), PASSWORD_DEFAULT);
             $insertQuery = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
-            $insertParams = array(
+            $insertParams = [
                 $user->getEmail(),
                 $user->getUsername(),
                 $hashedPassword
-            );
+            ];
 
             $insertStmt = sqlsrv_query($this->conn, $insertQuery, $insertParams);
 
@@ -139,33 +127,29 @@ class SignUp extends BaseMethod {
     }
 }
 
-
-class Login extends BaseMethod {
-    public function execute($user) {
-        // Using parameterized query with SQL Server (avoid SQL Injection)
+// --- LOGIN ---
+class Login extends BaseMethod
+{
+    public function execute($user)
+    {
         $query = "SELECT id, username, password FROM users WHERE email = ?";
-        $params = array($user->getEmail());
-
-        // Execute the query
+        $params = [$user->getEmail()];
         $stmt = sqlsrv_query($this->conn, $query, $params);
 
         if ($stmt === false) {
             $this->showAlert('Error!', 'Database error during login.', 'error');
-            die(print_r(sqlsrv_errors(), true)); // Print errors if query fails
+            die(print_r(sqlsrv_errors(), true));
         }
 
-        // Fetch the result
         $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
 
         if ($row) {
-            // Verify password
             if (password_verify($user->getPassword(), $row['password'])) {
                 session_start();
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['email'] = $user->getEmail();
                 $_SESSION['username'] = $row['username'];
 
-                // Show success message using SweetAlert
                 echo "
                 <!DOCTYPE html>
                 <html lang='en'>
@@ -197,9 +181,11 @@ class Login extends BaseMethod {
     }
 }
 
-
-class ConfirmPassword extends BaseMethod {
-    public function execute($data) {
+// --- CONFIRM PASSWORD RESET ---
+class ConfirmPassword extends BaseMethod
+{
+    public function execute($data)
+    {
         $email = $data['email'];
         $newPassword = $data['newPassword'];
         $confirmPassword = $data['confirmPassword'];
@@ -209,13 +195,22 @@ class ConfirmPassword extends BaseMethod {
             return;
         }
 
-        $checkEmailQuery = "SELECT * FROM users WHERE email = '" . $email . "'";
-        $result = $this->conn->query($checkEmailQuery);
+        $checkEmailQuery = "SELECT * FROM users WHERE email = ?";
+        $checkStmt = sqlsrv_query($this->conn, $checkEmailQuery, [$email]);
 
-        if ($result->num_rows > 0) {
+        if ($checkStmt === false) {
+            $this->showAlert('Error!', 'Error checking email.', 'error');
+            die(print_r(sqlsrv_errors(), true));
+        }
+
+        $userExists = sqlsrv_fetch_array($checkStmt, SQLSRV_FETCH_ASSOC);
+
+        if ($userExists) {
             $hashedPassword = password_hash($confirmPassword, PASSWORD_DEFAULT);
-            $updatePasswordQuery = "UPDATE users SET password = '" . $hashedPassword . "' WHERE email = '" . $email . "'";
-            if ($this->conn->query($updatePasswordQuery)) {
+            $updateQuery = "UPDATE users SET password = ? WHERE email = ?";
+            $updateStmt = sqlsrv_query($this->conn, $updateQuery, [$hashedPassword, $email]);
+
+            if ($updateStmt) {
                 echo "
                 <!DOCTYPE html>
                 <html lang='en'>
@@ -247,15 +242,16 @@ class ConfirmPassword extends BaseMethod {
     }
 }
 
+// --- ROUTING ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['signUp'])) {
-        $user = new Users($_POST['email'], $_POST['username'], $_POST['password']);
+        $user = new Users($_POST['email'], $_POST['username'], $_POST['password'], $conn);
         $signUp = new SignUp($conn);
         $signUp->execute($user);
     }
 
     if (isset($_POST['login'])) {
-        $user = new Users($_POST['email'], null, $_POST['password']);
+        $user = new Users($_POST['email'], null, $_POST['password'], $conn);
         $login = new Login($conn);
         $login->execute($user);
     }
@@ -270,4 +266,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $confirmPassword->execute($data);
     }
 }
-?>

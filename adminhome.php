@@ -2,14 +2,16 @@
 session_start();
 include('connect.php');
 
-class Users {
+class Users
+{
     public $email;
     public $username;
     public $password;
     public $conn;
 }
 
-class Properties {
+class Properties
+{
     public $conn;
     public $id;
     public $propertyType;
@@ -19,17 +21,20 @@ class Properties {
     public $capacity;
     public $description;
 
-    public function __construct($conn) {
+    public function __construct($conn)
+    {
         $this->conn = $conn;
     }
 
-    public function addProperty() {
+    public function addProperty()
+    {
         $query = "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
                 VALUES ('$this->propertyType', '$this->priceRange', '$this->location', '$this->area', '$this->capacity', '$this->description')";
         return sqlsrv_query($this->conn, $query);
     }
 
-    public function editProperty() {
+    public function editProperty()
+    {
         $query = "UPDATE properties SET 
                 property_type='$this->propertyType', 
                 price_range='$this->priceRange', 
@@ -41,11 +46,13 @@ class Properties {
         return sqlsrv_query($this->conn, $query);
     }
 
-    public function deleteProperty($id) {
+    public function deleteProperty($id)
+    {
         return sqlsrv_query($this->conn, "DELETE FROM properties WHERE id=$id");
     }
 
-    public function getPropertyById($id) {
+    public function getPropertyById($id)
+    {
         return sqlsrv_query($this->conn, "SELECT * FROM properties WHERE id = $id");
     }
 }
@@ -65,7 +72,7 @@ if (isset($_POST['add_property'])) {
     $propertyManager->area = $_POST['area'];
     $propertyManager->capacity = $_POST['capacity'];
     $propertyManager->description = $_POST['description'];
-    
+
     $propertyManager->addProperty();
     header("Location: adminhome.php");
     exit();
@@ -79,7 +86,7 @@ if (isset($_POST['edit_property'])) {
     $propertyManager->area = $_POST['area'];
     $propertyManager->capacity = $_POST['capacity'];
     $propertyManager->description = $_POST['description'];
-    
+
     $propertyManager->editProperty();
     header("Location: adminhome.php");
     exit();
@@ -100,7 +107,7 @@ if (isset($_POST['approve'])) {
     $buyerData = sqlsrv_fetch_array($buyerData, SQLSRV_FETCH_ASSOC);
 
     $stmt = sqlsrv_prepare($conn, "UPDATE buyers SET status = 'approved' WHERE id = ?", array($buyer_id));
-    
+
     if (sqlsrv_execute($stmt)) {
         $_SESSION['notification'] = "Request approved successfully";
     }
@@ -116,7 +123,7 @@ if (isset($_POST['reject'])) {
     $buyerData = sqlsrv_fetch_array($buyerData, SQLSRV_FETCH_ASSOC);
 
     $stmt = sqlsrv_prepare($conn, "UPDATE buyers SET status = 'rejected' WHERE id = ?", array($buyer_id));
-    
+
     if (sqlsrv_execute($stmt)) {
         $_SESSION['notification'] = "Request rejected successfully";
     }
@@ -127,44 +134,46 @@ $result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, proper
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 </head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="./css/admin.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="./css/admin.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
+
 <body>
     <h2>Admin Dashboard</h2>
-    
+
     <!-- Add Property Form -->
     <form method="post" action="adminhome.php" id="addPropertyForm">
-    <h3>Add New Property</h3>
-    <select name="property_type" required>
-        <option value="Apartment">Apartment</option>
-        <option value="Residential Lot">Residential Lot</option>
-        <option value="Condo">Condo</option>
-        <option value="House and Lot">House and Lot</option>
-        <option value="Commercial">Commercial</option>
-    </select>
-    <input type="text" name="price_range" placeholder="Price Range" required>
-    <input type="text" name="location" placeholder="Location" required>
-    <input type="number" name="area" placeholder="Area (sqm)" required>
-    <input type="text" name="capacity" placeholder="Capacity" required>
-    <textarea name="description" placeholder="Description" required></textarea>
-    <button type="submit" name="add_property">Add Property</button>
-</form>
+        <h3>Add New Property</h3>
+        <select name="property_type" required>
+            <option value="Apartment">Apartment</option>
+            <option value="Residential Lot">Residential Lot</option>
+            <option value="Condo">Condo</option>
+            <option value="House and Lot">House and Lot</option>
+            <option value="Commercial">Commercial</option>
+        </select>
+        <input type="text" name="price_range" placeholder="Price Range" required>
+        <input type="text" name="location" placeholder="Location" required>
+        <input type="number" name="area" placeholder="Area (sqm)" required>
+        <input type="text" name="capacity" placeholder="Capacity" required>
+        <textarea name="description" placeholder="Description" required></textarea>
+        <button type="submit" name="add_property">Add Property</button>
+    </form>
 
     <!-- Property List -->
     <div class="property-list">
@@ -222,16 +231,16 @@ $result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, proper
                     let form = document.createElement('form');
                     form.method = 'POST';
                     form.action = 'adminhome.php';
-                    
+
                     let input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = 'property_id';
                     input.value = id;
-                    
+
                     let button = document.createElement('input');
                     button.type = 'hidden';
                     button.name = 'delete_property';
-                    
+
                     form.appendChild(input);
                     form.appendChild(button);
                     document.body.appendChild(form);
@@ -274,31 +283,31 @@ $result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, proper
                             formData.append('edit_property', true);
 
                             return fetch('adminhome.php', {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(response.statusText);
-                                }
-                                return response;
-                            })
-                            .catch(error => {
-                                Swal.showValidationMessage(`Request failed: ${error}`);
-                            });
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(response.statusText);
+                                    }
+                                    return response;
+                                })
+                                .catch(error => {
+                                    Swal.showValidationMessage(`Request failed: ${error}`);
+                                });
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             Swal.fire('Updated!', 'Property has been updated.', 'success')
-                            .then(() => {
-                                window.location.reload();
-                            });
+                                .then(() => {
+                                    window.location.reload();
+                                });
                         }
                     });
                 });
         }
-        
-        <?php if(isset($_POST['add_property'])) { ?>
+
+        <?php if (isset($_POST['add_property'])) { ?>
             Swal.fire({
                 title: 'Success!',
                 text: 'Property added successfully',
@@ -306,71 +315,83 @@ $result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, proper
             });
         <?php } ?>
 
-        <?php if(isset($_POST['edit_property'])) { ?>
+        <?php if (isset($_POST['edit_property'])) { ?>
             Swal.fire({
                 title: 'Success!',
                 text: 'Property updated successfully',
                 icon: 'success'
             });
-        <?php } 
-?>
+        <?php }
+        ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Admin Panel - Pending Purchases</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Buyer Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Property Type</th>
-                    <th>Location</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-    <tr>
-        <td><?= htmlspecialchars($row['fullname']) ?></td>
-        <td><?= htmlspecialchars($row['email']) ?></td>
-        <td><?= htmlspecialchars($row['phone']) ?></td>
-        <td><?= htmlspecialchars($row['property_type']) ?></td>
-        <td><?= htmlspecialchars($row['location']) ?></td>
-        <td>
-            <form method="POST">
-                <input type="hidden" name="buyer_id" value="<?= $row['id'] ?>">
-                <button type="submit" name="approve" class="btn btn-success">Approve</button>
-                <button type="submit" name="reject" class="btn btn-danger">Reject</button>
-            </form>
-        </td>
-    </tr>
-<?php endwhile; ?>
-
-            </tbody>
-        </table>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        <?php if (isset($_SESSION['notification'])): ?>
-        Swal.fire({
-            title: '<?php echo isset($_SESSION['notification']) && strpos($_SESSION['notification'], 'error') !== false ? 'Error!' : 'Success!'; ?>',
-            text: '<?php echo $_SESSION['notification']; ?>',
-            icon: '<?php echo isset($_SESSION['notification']) && strpos($_SESSION['notification'], 'error') !== false ? 'error' : 'success'; ?>'
-        }).then(() => {
-            <?php unset($_SESSION['notification']); ?>
-        });
-        <?php endif; ?>
+            <
+            !DOCTYPE html >
+            <
+            html lang = "en" >
+            <
+            head >
+            <
+            meta charset = "UTF-8" >
+            <
+            meta name = "viewport"
+        content = "width=device-width, initial-scale=1.0" >
+            <
+            title > Admin Panel < /title> <
+            link href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel = "stylesheet" >
+            <
+            script src = "https://cdn.jsdelivr.net/npm/sweetalert2@11" >
     </script>
-</body>
+    </head>
+
+    <body>
+        <div class="container mt-5">
+            <h1>Admin Panel - Pending Purchases</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Buyer Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Property Type</th>
+                        <th>Location</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['fullname']) ?></td>
+                            <td><?= htmlspecialchars($row['email']) ?></td>
+                            <td><?= htmlspecialchars($row['phone']) ?></td>
+                            <td><?= htmlspecialchars($row['property_type']) ?></td>
+                            <td><?= htmlspecialchars($row['location']) ?></td>
+                            <td>
+                                <form method="POST">
+                                    <input type="hidden" name="buyer_id" value="<?= $row['id'] ?>">
+                                    <button type="submit" name="approve" class="btn btn-success">Approve</button>
+                                    <button type="submit" name="reject" class="btn btn-danger">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+
+                </tbody>
+            </table>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            <?php if (isset($_SESSION['notification'])): ?>
+                Swal.fire({
+                    title: '<?php echo isset($_SESSION['notification']) && strpos($_SESSION['notification'], 'error') !== false ? 'Error!' : 'Success!'; ?>',
+                    text: '<?php echo $_SESSION['notification']; ?>',
+                    icon: '<?php echo isset($_SESSION['notification']) && strpos($_SESSION['notification'], 'error') !== false ? 'error' : 'success'; ?>'
+                }).then(() => {
+                    <?php unset($_SESSION['notification']); ?>
+                });
+            <?php endif; ?>
+        </script>
+    </body>
+
 </html>
