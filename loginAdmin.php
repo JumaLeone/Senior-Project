@@ -284,7 +284,7 @@ $result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, proper
             <tbody>
                 <?php while ($buyer = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) : ?>
                     <tr>
-                        <td><?= htmlspecialchars($buyer['full_name']) ?></td>
+                        <td><?= htmlspecialchars($buyer['fullname']) ?></td>
                         <td><?= htmlspecialchars($buyer['email']) ?></td>
                         <td><?= htmlspecialchars($buyer['phone']) ?></td>
                         <td><?= htmlspecialchars($buyer['property_type']) ?></td>

@@ -2,14 +2,6 @@
 session_start();
 include('connect.php');
 
-class Users
-{
-    public $email;
-    public $username;
-    public $password;
-    public $conn;
-}
-
 class Properties
 {
     public $conn;
@@ -29,156 +21,205 @@ class Properties
     public function addProperty()
     {
         $query = "INSERT INTO properties (property_type, price_range, location, area, capacity, description) 
-                VALUES ('$this->propertyType', '$this->priceRange', '$this->location', '$this->area', '$this->capacity', '$this->description')";
-        return sqlsrv_query($this->conn, $query);
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $params = [$this->propertyType, $this->priceRange, $this->location, $this->area, $this->capacity, $this->description];
+        return sqlsrv_query($this->conn, $query, $params);
     }
 
     public function editProperty()
     {
         $query = "UPDATE properties SET 
-                property_type='$this->propertyType', 
-                price_range='$this->priceRange', 
-                location='$this->location',
-                area='$this->area', 
-                capacity='$this->capacity', 
-                description='$this->description'
-                WHERE id=$this->id";
-        return sqlsrv_query($this->conn, $query);
+                property_type = ?, 
+                price_range = ?, 
+                location = ?,
+                area = ?, 
+                capacity = ?, 
+                description = ?
+                WHERE id = ?";
+        $params = [$this->propertyType, $this->priceRange, $this->location, $this->area, $this->capacity, $this->description, $this->id];
+        return sqlsrv_query($this->conn, $query, $params);
     }
 
     public function deleteProperty($id)
     {
-        return sqlsrv_query($this->conn, "DELETE FROM properties WHERE id=$id");
+        $query = "DELETE FROM properties WHERE id = ?";
+        $params = [$id];
+        return sqlsrv_query($this->conn, $query, $params);
     }
 
     public function getPropertyById($id)
     {
-        return sqlsrv_query($this->conn, "SELECT * FROM properties WHERE id = $id");
+        $query = "SELECT * FROM properties WHERE id = ?";
+        $params = [$id];
+        $stmt = sqlsrv_query($this->conn, $query, $params);
+        return $stmt;
     }
 }
 
 $propertyManager = new Properties($conn);
 
+// Handle fetch property by ID for editing (AJAX)
 if (isset($_GET['id'])) {
-    $property = $propertyManager->getPropertyById($_GET['id']);
-    echo json_encode(sqlsrv_fetch_array($property, SQLSRV_FETCH_ASSOC));
+    $id = intval($_GET['id']);
+    $property = $propertyManager->getPropertyById($id);
+    $row = sqlsrv_fetch_array($property, SQLSRV_FETCH_ASSOC);
+    echo json_encode($row);
     exit();
 }
 
+// Handle Add Property
 if (isset($_POST['add_property'])) {
     $propertyManager->propertyType = $_POST['property_type'];
     $propertyManager->priceRange = $_POST['price_range'];
     $propertyManager->location = $_POST['location'];
-    $propertyManager->area = $_POST['area'];
+    $propertyManager->area = intval($_POST['area']);
     $propertyManager->capacity = $_POST['capacity'];
     $propertyManager->description = $_POST['description'];
 
-    $propertyManager->addProperty();
+    if ($propertyManager->addProperty()) {
+        $_SESSION['notification'] = "Property added successfully";
+    } else {
+        $_SESSION['notification'] = "Error adding property";
+    }
     header("Location: adminhome.php");
     exit();
 }
 
+// Handle Edit Property
 if (isset($_POST['edit_property'])) {
-    $propertyManager->id = $_POST['property_id'];
+    $propertyManager->id = intval($_POST['property_id']);
     $propertyManager->propertyType = $_POST['property_type'];
     $propertyManager->priceRange = $_POST['price_range'];
     $propertyManager->location = $_POST['location'];
-    $propertyManager->area = $_POST['area'];
+    $propertyManager->area = intval($_POST['area']);
     $propertyManager->capacity = $_POST['capacity'];
     $propertyManager->description = $_POST['description'];
 
-    $propertyManager->editProperty();
+    if ($propertyManager->editProperty()) {
+        $_SESSION['notification'] = "Property updated successfully";
+    } else {
+        $_SESSION['notification'] = "Error updating property";
+    }
     header("Location: adminhome.php");
     exit();
 }
 
+// Handle Delete Property
 if (isset($_POST['delete_property'])) {
-    $propertyManager->deleteProperty($_POST['property_id']);
+    $property_id = intval($_POST['property_id']);
+    if ($propertyManager->deleteProperty($property_id)) {
+        $_SESSION['notification'] = "Property deleted successfully";
+    } else {
+        $_SESSION['notification'] = "Error deleting property";
+    }
     header("Location: adminhome.php");
     exit();
 }
 
+// Handle Approve Buyer
 if (isset($_POST['approve'])) {
-    $buyer_id = $_POST['buyer_id'];
-    $query = "SELECT b.email, p.property_type, p.location FROM buyers b 
-              JOIN properties p ON b.property_id = p.id 
-              WHERE b.id = '$buyer_id'";
-    $buyerData = sqlsrv_query($conn, $query);
-    $buyerData = sqlsrv_fetch_array($buyerData, SQLSRV_FETCH_ASSOC);
-
-    $stmt = sqlsrv_prepare($conn, "UPDATE buyers SET status = 'approved' WHERE id = ?", array($buyer_id));
-
+    $buyer_id = intval($_POST['buyer_id']);
+    $query = "UPDATE buyers SET status = 'approved' WHERE id = ?";
+    $params = [$buyer_id];
+    $stmt = sqlsrv_prepare($conn, $query, $params);
     if (sqlsrv_execute($stmt)) {
         $_SESSION['notification'] = "Request approved successfully";
+    } else {
+        $_SESSION['notification'] = "Error approving request";
     }
     sqlsrv_free_stmt($stmt);
+    header("Location: adminhome.php");
+    exit();
 }
 
+// Handle Reject Buyer
 if (isset($_POST['reject'])) {
-    $buyer_id = $_POST['buyer_id'];
-    $query = "SELECT b.email, p.property_type, p.location FROM buyers b 
-              JOIN properties p ON b.property_id = p.id 
-              WHERE b.id = '$buyer_id'";
-    $buyerData = sqlsrv_query($conn, $query);
-    $buyerData = sqlsrv_fetch_array($buyerData, SQLSRV_FETCH_ASSOC);
-
-    $stmt = sqlsrv_prepare($conn, "UPDATE buyers SET status = 'rejected' WHERE id = ?", array($buyer_id));
-
+    $buyer_id = intval($_POST['buyer_id']);
+    $query = "UPDATE buyers SET status = 'rejected' WHERE id = ?";
+    $params = [$buyer_id];
+    $stmt = sqlsrv_prepare($conn, $query, $params);
     if (sqlsrv_execute($stmt)) {
         $_SESSION['notification'] = "Request rejected successfully";
+    } else {
+        $_SESSION['notification'] = "Error rejecting request";
     }
     sqlsrv_free_stmt($stmt);
+    header("Location: adminhome.php");
+    exit();
 }
 
-$result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, properties.location FROM buyers JOIN properties ON buyers.property_id = properties.id WHERE buyers.status = 'pending'");
+// Fetch Pending Buyers
+$result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, properties.location 
+                               FROM buyers 
+                               JOIN properties ON buyers.property_id = properties.id 
+                               WHERE buyers.status = 'pending'");
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-</head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-<!-- SweetAlert2 CSS -->
-<link rel="stylesheet" href="./css/admin.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/admin.css" />
 </head>
 
-<body>
-    <h2>Admin Dashboard</h2>
+<body class="container py-4">
 
-    <!-- Add Property Form -->
-    <form method="post" action="adminhome.php" id="addPropertyForm">
+    <h1 class="mb-4">Admin Dashboard</h1>
+
+
+    <div class="mb-5">
         <h3>Add New Property</h3>
-        <select name="property_type" required>
-            <option value="Apartment">Apartment</option>
-            <option value="Residential Lot">Residential Lot</option>
-            <option value="Condo">Condo</option>
-            <option value="House and Lot">House and Lot</option>
-            <option value="Commercial">Commercial</option>
-        </select>
-        <input type="text" name="price_range" placeholder="Price Range" required>
-        <input type="text" name="location" placeholder="Location" required>
-        <input type="number" name="area" placeholder="Area (sqm)" required>
-        <input type="text" name="capacity" placeholder="Capacity" required>
-        <textarea name="description" placeholder="Description" required></textarea>
-        <button type="submit" name="add_property">Add Property</button>
-    </form>
+        <form method="post" action="adminhome.php" id="addPropertyForm" class="row g-3">
+            <div class="col-md-4">
+                <label for="property_type" class="form-label">Property Type</label>
+                <select name="property_type" id="property_type" class="form-select" required>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Residential Lot">Residential Lot</option>
+                    <option value="Condo">Condo</option>
+                    <option value="House and Lot">House and Lot</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="price_range" class="form-label">Price Range</label>
+                <input type="text" name="price_range" id="price_range" class="form-control" placeholder="Price Range" required />
+            </div>
+            <div class="col-md-4">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" name="location" id="location" class="form-control" placeholder="Location" required />
+            </div>
+            <div class="col-md-3">
+                <label for="area" class="form-label">Area (sqm)</label>
+                <input type="number" name="area" id="area" class="form-control" placeholder="Area" required />
+            </div>
+            <div class="col-md-3">
+                <label for="capacity" class="form-label">Capacity</label>
+                <input type="text" name="capacity" id="capacity" class="form-control" placeholder="Capacity" required />
+            </div>
+            <div class="col-md-6">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="description" id="description" class="form-control" placeholder="Description" rows="2" required></textarea>
+            </div>
+            <div class="col-12">
+                <button type="submit" name="add_property" class="btn btn-primary">Add Property</button>
+            </div>
+        </form>
+    </div>
 
     <!-- Property List -->
-    <div class="property-list">
+    <div class="mb-5">
         <h3>Manage Properties</h3>
-        <table id="propertyTable" class="display">
+        <table id="propertyTable" class="display table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Property Type</th>
@@ -187,23 +228,45 @@ $result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, proper
                     <th>Area (sqm)</th>
                     <th>Capacity</th>
                     <th>Description</th>
-                    <th>Actions</th>
+                    <th>Status</th>
+                    <th style="min-width: 140px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                $properties = sqlsrv_query($conn, "SELECT * FROM properties WHERE id NOT IN (SELECT property_id FROM buyers WHERE status = 'approved')");
+                // Solution 1: Show all properties with their status
+                $properties = sqlsrv_query($conn, "
+                    SELECT p.*, 
+                           CASE 
+                               WHEN b.status = 'approved' THEN 'Sold' 
+                               WHEN b.status = 'pending' THEN 'Pending Sale'
+                               ELSE 'Available' 
+                           END as property_status
+                    FROM properties p 
+                    LEFT JOIN buyers b ON p.id = b.property_id AND b.status IN ('approved', 'pending')
+                ");
+
                 while ($property = sqlsrv_fetch_array($properties, SQLSRV_FETCH_ASSOC)) {
                     echo "<tr>";
-                    echo "<td>{$property['property_type']}</td>";
-                    echo "<td>{$property['price_range']}</td>";
-                    echo "<td>{$property['location']}</td>";
-                    echo "<td>{$property['area']}</td>";
-                    echo "<td>{$property['capacity']}</td>";
-                    echo "<td>{$property['description']}</td>";
+                    echo "<td>" . htmlspecialchars($property['property_type']) . "</td>";
+                    echo "<td>" . htmlspecialchars($property['price_range']) . "</td>";
+                    echo "<td>" . htmlspecialchars($property['location']) . "</td>";
+                    echo "<td>" . htmlspecialchars($property['area']) . "</td>";
+                    echo "<td>" . htmlspecialchars($property['capacity']) . "</td>";
+                    echo "<td>" . htmlspecialchars($property['description']) . "</td>";
+
+                    // Status badge with different colors
+                    $badgeClass = 'success';
+                    if ($property['property_status'] == 'Pending Sale') {
+                        $badgeClass = 'warning';
+                    } elseif ($property['property_status'] == 'Sold') {
+                        $badgeClass = 'secondary';
+                    }
+                    echo "<td><span class='badge bg-{$badgeClass}'>" . htmlspecialchars($property['property_status']) . "</span></td>";
+
                     echo "<td>
-                            <button onclick='editProperty({$property['id']})'>Edit</button>
-                            <button onclick='deleteProperty({$property['id']})'>Delete</button>
+                            <button class='btn btn-sm btn-warning me-2' onclick='editProperty({$property['id']})'>Edit</button>
+                            <button class='btn btn-sm btn-danger' onclick='deleteProperty({$property['id']})'>Delete</button>
                           </td>";
                     echo "</tr>";
                 }
@@ -212,186 +275,138 @@ $result = sqlsrv_query($conn, "SELECT buyers.*, properties.property_type, proper
         </table>
     </div>
 
+    <!-- Pending Buyer Requests -->
+    <div class="mb-5">
+        <h3>Pending Purchase Requests</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Buyer Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Property Type</th>
+                    <th>Location</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($buyer = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($buyer['fullname']) ?></td>
+                        <td><?= htmlspecialchars($buyer['email']) ?></td>
+                        <td><?= htmlspecialchars($buyer['phone']) ?></td>
+                        <td><?= htmlspecialchars($buyer['property_type']) ?></td>
+                        <td><?= htmlspecialchars($buyer['location']) ?></td>
+                        <td>
+                            <form method="post" action="adminhome.php" style="display:inline;">
+                                <input type="hidden" name="buyer_id" value="<?= $buyer['id'] ?>">
+                                <button type="submit" name="approve" class="btn btn-success btn-sm">Approve</button>
+                            </form>
+                            <form method="post" action="adminhome.php" style="display:inline;">
+                                <input type="hidden" name="buyer_id" value="<?= $buyer['id'] ?>">
+                                <button type="submit" name="reject" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+
     <script>
         $(document).ready(function() {
             $('#propertyTable').DataTable();
+
+            <?php if (isset($_SESSION['notification'])): ?>
+                Swal.fire({
+                    title: 'Notification',
+                    text: '<?= $_SESSION['notification'] ?>',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                <?php unset($_SESSION['notification']); ?>
+            <?php endif; ?>
         });
 
+        function editProperty(id) {
+            console.log('Edit clicked for property id:', id);
+            $.get('adminhome.php', {
+                id: id
+            }, function(data) {
+                try {
+                    let property = JSON.parse(data);
+                    console.log('Property data received:', property);
+                    Swal.fire({
+                        title: 'Edit Property',
+                        html: `
+                <form id="editPropertyForm" method="post" action="adminhome.php" class="text-start">
+                    <input type="hidden" name="property_id" value="${property.id}" />
+                    <div class="mb-2">
+                        <label>Property Type</label>
+                        <select name="property_type" class="form-select" required>
+                            <option ${property.property_type === 'Apartment' ? 'selected' : ''}>Apartment</option>
+                            <option ${property.property_type === 'Residential Lot' ? 'selected' : ''}>Residential Lot</option>
+                            <option ${property.property_type === 'Condo' ? 'selected' : ''}>Condo</option>
+                            <option ${property.property_type === 'House and Lot' ? 'selected' : ''}>House and Lot</option>
+                            <option ${property.property_type === 'Commercial' ? 'selected' : ''}>Commercial</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Price Range</label>
+                        <input type="text" name="price_range" value="${property.price_range}" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Location</label>
+                        <input type="text" name="location" value="${property.location}" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Area (sqm)</label>
+                        <input type="number" name="area" value="${property.area}" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Capacity</label>
+                        <input type="text" name="capacity" value="${property.capacity}" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Description</label>
+                        <textarea name="description" class="form-control" rows="3" required>${property.description}</textarea>
+                    </div>
+                    <button type="submit" name="edit_property" class="btn btn-primary w-100">Save Changes</button>
+                </form>
+                `,
+                        showConfirmButton: false,
+                        width: 600
+                    });
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    Swal.fire('Error', 'Could not load property data.', 'error');
+                }
+            }).fail(function() {
+                Swal.fire('Error', 'Failed to fetch property data.', 'error');
+            });
+        }
+
         function deleteProperty(id) {
+            console.log('Delete clicked for property id:', id);
             Swal.fire({
                 title: 'Are you sure?',
-                text: "You won't be able to revert this!",
+                text: "This property will be deleted permanently.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    let form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'adminhome.php';
-
-                    let input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'property_id';
-                    input.value = id;
-
-                    let button = document.createElement('input');
-                    button.type = 'hidden';
-                    button.name = 'delete_property';
-
-                    form.appendChild(input);
-                    form.appendChild(button);
-                    document.body.appendChild(form);
+                    let form = $('<form method="post" action="adminhome.php"></form>');
+                    form.append(`<input type="hidden" name="property_id" value="${id}">`);
+                    form.append('<input type="hidden" name="delete_property" value="1">');
+                    $('body').append(form);
                     form.submit();
                 }
             });
         }
-
-        function editProperty(id) {
-            fetch(`adminhome.php?id=${id}`)
-                .then(response => response.json())
-                .then(property => {
-                    Swal.fire({
-                        title: 'Edit Property',
-                        html: `
-                            <select id="property_type" class="swal2-input">
-                                <option value="Apartment" ${property.property_type === 'Apartment' ? 'selected' : ''}>Apartment</option>
-                                <option value="Residential Lot" ${property.property_type === 'Residential Lot' ? 'selected' : ''}>Residential Lot</option>
-                                <option value="Condo" ${property.property_type === 'Condo' ? 'selected' : ''}>Condo</option>
-                                <option value="House and Lot" ${property.property_type === 'House and Lot' ? 'selected' : ''}>House and Lot</option>
-                                <option value="Commercial" ${property.property_type === 'Commercial' ? 'selected' : ''}>Commercial</option>
-                            </select>
-                            <input type="text" id="price_range" class="swal2-input" placeholder="Price Range" value="${property.price_range}">
-                            <input type="text" id="location" class="swal2-input" placeholder="Location" value="${property.location}">
-                            <input type="number" id="area" class="swal2-input" placeholder="Area (sqm)" value="${property.area}">
-                            <input type="text" id="capacity" class="swal2-input" placeholder="Capacity" value="${property.capacity}">
-                            <textarea id="description" class="swal2-input" placeholder="Description">${property.description}</textarea>
-                        `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Update',
-                        preConfirm: () => {
-                            const formData = new FormData();
-                            formData.append('property_id', id);
-                            formData.append('property_type', document.getElementById('property_type').value);
-                            formData.append('price_range', document.getElementById('price_range').value);
-                            formData.append('location', document.getElementById('location').value);
-                            formData.append('area', document.getElementById('area').value);
-                            formData.append('capacity', document.getElementById('capacity').value);
-                            formData.append('description', document.getElementById('description').value);
-                            formData.append('edit_property', true);
-
-                            return fetch('adminhome.php', {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error(response.statusText);
-                                    }
-                                    return response;
-                                })
-                                .catch(error => {
-                                    Swal.showValidationMessage(`Request failed: ${error}`);
-                                });
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            Swal.fire('Updated!', 'Property has been updated.', 'success')
-                                .then(() => {
-                                    window.location.reload();
-                                });
-                        }
-                    });
-                });
-        }
-
-        <?php if (isset($_POST['add_property'])) { ?>
-            Swal.fire({
-                title: 'Success!',
-                text: 'Property added successfully',
-                icon: 'success'
-            });
-        <?php } ?>
-
-        <?php if (isset($_POST['edit_property'])) { ?>
-            Swal.fire({
-                title: 'Success!',
-                text: 'Property updated successfully',
-                icon: 'success'
-            });
-        <?php }
-        ?>
-
-            <
-            !DOCTYPE html >
-            <
-            html lang = "en" >
-            <
-            head >
-            <
-            meta charset = "UTF-8" >
-            <
-            meta name = "viewport"
-        content = "width=device-width, initial-scale=1.0" >
-            <
-            title > Admin Panel < /title> <
-            link href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel = "stylesheet" >
-            <
-            script src = "https://cdn.jsdelivr.net/npm/sweetalert2@11" >
     </script>
-    </head>
-
-    <body>
-        <div class="container mt-5">
-            <h1>Admin Panel - Pending Purchases</h1>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Buyer Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Property Type</th>
-                        <th>Location</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($row['fullname']) ?></td>
-                            <td><?= htmlspecialchars($row['email']) ?></td>
-                            <td><?= htmlspecialchars($row['phone']) ?></td>
-                            <td><?= htmlspecialchars($row['property_type']) ?></td>
-                            <td><?= htmlspecialchars($row['location']) ?></td>
-                            <td>
-                                <form method="POST">
-                                    <input type="hidden" name="buyer_id" value="<?= $row['id'] ?>">
-                                    <button type="submit" name="approve" class="btn btn-success">Approve</button>
-                                    <button type="submit" name="reject" class="btn btn-danger">Reject</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-
-                </tbody>
-            </table>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            <?php if (isset($_SESSION['notification'])): ?>
-                Swal.fire({
-                    title: '<?php echo isset($_SESSION['notification']) && strpos($_SESSION['notification'], 'error') !== false ? 'Error!' : 'Success!'; ?>',
-                    text: '<?php echo $_SESSION['notification']; ?>',
-                    icon: '<?php echo isset($_SESSION['notification']) && strpos($_SESSION['notification'], 'error') !== false ? 'error' : 'success'; ?>'
-                }).then(() => {
-                    <?php unset($_SESSION['notification']); ?>
-                });
-            <?php endif; ?>
-        </script>
-    </body>
+</body>
 
 </html>

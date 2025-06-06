@@ -3,11 +3,13 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #8695aa;
+  background: linear-gradient(to top, #181827, rgba(56, 57, 58, 0.582));
 }
 
-h2 {
-  color: #2c3e50;
+h1,
+h2,
+h3 {
+  color: #000000;
   text-align: center;
   margin-bottom: 30px;
 }
@@ -33,10 +35,10 @@ h2 {
 }
 
 #addPropertyForm button {
-  background-color: #3498db;
-  color: white;
+  background-color: #3498db !important;
+  color: white !important;
   padding: 12px 20px;
-  border: none;
+  border: none !important;
   border-radius: 4px;
   cursor: pointer;
   width: 100%;
@@ -44,17 +46,19 @@ h2 {
 }
 
 #addPropertyForm button:hover {
-  background-color: #2980b9;
+  background-color: #2980b9 !important;
 }
 
-/* Table Styling */
-.property-list {
+/* Property Management Section Styling */
+.mb-5 {
   background: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
+/* Table Styling */
 #propertyTable {
   width: 100%;
   border-collapse: collapse;
@@ -62,37 +66,102 @@ h2 {
 }
 
 #propertyTable th {
-  background-color: #3498db;
-  color: white;
+  background-color: #3498db !important;
+  color: white !important;
   padding: 12px;
+  border: 1px solid #dee2e6;
 }
 
 #propertyTable td {
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
 }
 
-/* Button Styling */
-.property-list button {
-  padding: 8px 15px;
-  margin: 0 5px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+#propertyTable tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
 }
 
-.property-list button:nth-child(1) {
-  background-color: #2ecc71;
-  color: white;
+#propertyTable tbody tr:hover {
+  background-color: #e9ecef;
 }
 
-.property-list button:nth-child(2) {
-  background-color: #e74c3c;
-  color: white;
+/* Button Styling - Override Bootstrap */
+.btn-warning {
+  background-color: #f39c12 !important;
+  border-color: #f39c12 !important;
+  color: white !important;
 }
 
-.property-list button:hover {
-  opacity: 0.9;
+.btn-warning:hover {
+  background-color: #e67e22 !important;
+  border-color: #e67e22 !important;
+  color: white !important;
+}
+
+.btn-danger {
+  background-color: #e74c3c !important;
+  border-color: #e74c3c !important;
+  color: white !important;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b !important;
+  border-color: #c0392b !important;
+  color: white !important;
+}
+
+.btn-success {
+  background-color: #27ae60 !important;
+  border-color: #27ae60 !important;
+  color: white !important;
+}
+
+.btn-success:hover {
+  background-color: #229954 !important;
+  border-color: #229954 !important;
+  color: white !important;
+}
+
+.btn-primary {
+  background-color: #3498db !important;
+  border-color: #3498db !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9 !important;
+  border-color: #2980b9 !important;
+  color: white !important;
+}
+
+/* Status Badge Styling */
+.badge.bg-success {
+  background-color: #27ae60 !important;
+}
+
+.badge.bg-warning {
+  background-color: #f39c12 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #95a5a6 !important;
+}
+
+/* Pending Requests Section */
+.table {
+  background: white;
+}
+
+.table th {
+  background-color: #34495e !important;
+  color: white !important;
+  border: 1px solid #dee2e6;
+}
+
+.table td {
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
 }
 
 /* SweetAlert Customization */
@@ -101,7 +170,51 @@ h2 {
 }
 
 .swal2-input,
-.swal2-textarea {
+.swal2-textarea,
+.swal2-select {
   margin: 10px auto !important;
   width: 90% !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 8px !important;
+}
+
+/* Form styling inside SweetAlert */
+.swal2-html-container form {
+  text-align: left;
+}
+
+.swal2-html-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.swal2-html-container .form-control,
+.swal2-html-container .form-select {
+  width: 100% !important;
+  margin-bottom: 15px !important;
+  padding: 8px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+}
+
+/* DataTables styling */
+.dataTables_wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.dataTables_filter input {
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 5px !important;
+}
+
+.dataTables_length select {
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 5px !important;
 }
