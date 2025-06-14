@@ -98,3 +98,19 @@ GO
 
 DBCC CHECKIDENT ('buyers', RESEED, 0);
 GO
+
+-- Check if table exists and has data
+SELECT COUNT(*) FROM notifications;
+
+-- Check what emails are in the table
+SELECT DISTINCT user_email FROM notifications;
+
+-- Check if your specific email has notifications
+SELECT * FROM notifications WHERE user_email = 'your_email_here';
+
+SELECT COUNT(*) as total FROM notifications;
+
+SELECT DISTINCT user_email FROM notifications;
+
+INSERT INTO notifications (user_email, message, date_created) 
+VALUES ('jumaleone42@gmail.com', 'Test notification message', GETDATE());

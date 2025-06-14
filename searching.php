@@ -102,8 +102,94 @@ $properties = $dbHandler->getProperties($search, $filter);
                 <li><a href="#about">ABOUT</a></li>
             </ul>
         </div>
+
+        <div class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+
+
+        <!-- Mobile Dropdown Menu -->
+        <div class="mobile-dropdown" id="mobileDropdown">
+            <ul>
+                <li><a href="homepage.php">HOME</a></li>
+                <li><a href="#" class="active">HOUSING OFFERS</a></li>
+                <li><a href="profile.php">MY PROFILE</a></li>
+                <li><a href="notifications.php">NOTIFICATIONS</a></li>
+                <li><a href="homepage.php#about">ABOUT</a></li>
+            </ul>
+        </div>
         <a href="logout.php" class="custom-btn" style="text-decoration: none;">LOGOUT</a>
     </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileDropdown = document.getElementById('mobileDropdown');
+            let isMenuOpen = false;
+
+            menuToggle.addEventListener('click', function() {
+                isMenuOpen = !isMenuOpen;
+
+                // Toggle hamburger animation
+                menuToggle.classList.toggle('active');
+
+                // Toggle dropdown menu
+                if (isMenuOpen) {
+                    mobileDropdown.style.display = 'block';
+                    // Small delay to ensure display:block is applied before animation
+                    setTimeout(() => {
+                        mobileDropdown.classList.add('show');
+                    }, 10);
+                } else {
+                    mobileDropdown.classList.remove('show');
+                    // Hide after animation completes
+                    setTimeout(() => {
+                        mobileDropdown.style.display = 'none';
+                    }, 300);
+                }
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!menuToggle.contains(e.target) && !mobileDropdown.contains(e.target)) {
+                    if (isMenuOpen) {
+                        isMenuOpen = false;
+                        menuToggle.classList.remove('active');
+                        mobileDropdown.classList.remove('show');
+                        setTimeout(() => {
+                            mobileDropdown.style.display = 'none';
+                        }, 300);
+                    }
+                }
+            });
+
+            // Close menu when clicking on a link
+            const mobileLinks = mobileDropdown.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    isMenuOpen = false;
+                    menuToggle.classList.remove('active');
+                    mobileDropdown.classList.remove('show');
+                    setTimeout(() => {
+                        mobileDropdown.style.display = 'none';
+                    }, 300);
+                });
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768 && isMenuOpen) {
+                    isMenuOpen = false;
+                    menuToggle.classList.remove('active');
+                    mobileDropdown.classList.remove('show');
+                    mobileDropdown.style.display = 'none';
+                }
+            });
+        });
+    </script>
 
     <h2 style="text-align: center; margin: 2rem 0;">Search Housing Options</h2>
 
@@ -150,6 +236,12 @@ $properties = $dbHandler->getProperties($search, $filter);
                 echo '<div class="custom-property-details">';
                 echo '<div class="custom-property-type">' . htmlspecialchars($row['property_type']) . '</div>';
                 echo '<div class="custom-property-location">' . htmlspecialchars($row['location']) . '</div>';
+
+                // ADD THE DESCRIPTION HERE - with text truncation
+                $description = htmlspecialchars($row['description']);
+                $truncatedDescription = strlen($description) > 80 ? substr($description, 0, 80) . '...' : $description;
+                echo '<div class="custom-property-description">' . $truncatedDescription . '</div>';
+
                 echo '<div class="custom-property-specs">';
                 echo '<span>Area: ' . htmlspecialchars($row['area']) . ' sqm</span>';
                 echo '<span>Capacity: ' . htmlspecialchars($row['capacity']) . '</span>';
@@ -229,6 +321,7 @@ $properties = $dbHandler->getProperties($search, $filter);
                             <option value="100001-150000">100,001 - 150,000</option>
                             <option value="150001-200000">150,001 - 200,000</option>
                             <option value="200001-250000">200,001 - 250,000</option>
+                            <option value="200001-250000">250,001 - 300,000</option>
                         </select>
                     </div>
 
@@ -293,6 +386,12 @@ $properties = $dbHandler->getProperties($search, $filter);
             });
         });
     </script>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2025 KeyNest. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 
 </html>
