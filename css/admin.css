@@ -1,18 +1,43 @@
+/* Base Styles */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background: linear-gradient(to top, #181827, rgba(56, 57, 58, 0.582));
+  background-color: #f4f4f4;
+  min-height: 100vh;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   color: #000000;
   text-align: center;
   margin-bottom: 30px;
 }
+
+/* Card Styling (Used for Sections) */
+.card {
+  background: white;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  overflow: hidden;
+  display: block !important; /* Force display */
+  visibility: visible !important; /* Ensure visibility */
+}
+
+.card-header {
+  background-color: #34495e !important;
+  color: white !important;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.card-body {
+  padding: 20px;
+  display: block !important;
+}
+
 
 /* Form Styling */
 #addPropertyForm {
@@ -32,6 +57,14 @@ h3 {
   border: 1px solid #ddd;
   border-radius: 4px;
   box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+#addPropertyForm input:focus,
+#addPropertyForm select:focus,
+#addPropertyForm textarea:focus {
+  border-color: #3498db;
+  outline: none;
 }
 
 #addPropertyForm button {
@@ -43,50 +76,117 @@ h3 {
   cursor: pointer;
   width: 100%;
   font-size: 16px;
+  transition: background-color 0.3s;
 }
 
 #addPropertyForm button:hover {
   background-color: #2980b9 !important;
 }
 
-/* Property Management Section Styling */
-.mb-5 {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
-}
-
-/* Table Styling */
-#propertyTable {
-  width: 100%;
+/* Table Styling - General */
+.table {
+  width: 100% !important;
   border-collapse: collapse;
   margin-top: 20px;
+  background-color: white;
+  display: table !important; /* Force table display */
+}
+
+.table th {
+  background-color: #3498db !important;
+  color: white !important;
+  padding: 12px;
+  border: 1px solid #dee2e6;
+  text-align: left;
+}
+
+.table td {
+  padding: 12px;
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+  background-color: white;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa !important;
+}
+
+.table tbody tr:hover {
+  background-color: #e9ecef !important;
+}
+
+/* Property Table Specific */
+#propertyTable {
+  display: table !important;
+  width: 100% !important;
 }
 
 #propertyTable th {
   background-color: #3498db !important;
   color: white !important;
-  padding: 12px;
-  border: 1px solid #dee2e6;
 }
 
-#propertyTable td {
-  padding: 10px;
-  border: 1px solid #dee2e6;
-  vertical-align: middle;
+
+/* Table Responsive Wrapper */
+.table-responsive {
+    display: block !important;
 }
 
-#propertyTable tbody tr:nth-child(even) {
-  background-color: #f8f9fa;
+.alert-info {
+    display: block !important;
+    margin: 20px 0 !important;
 }
 
-#propertyTable tbody tr:hover {
-  background-color: #e9ecef;
+/* Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.
+
+/* Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+  text-transform: uppercase;
 }
 
-/* Button Styling - Override Bootstrap */
+.status-unread {
+  background-color: #f39c12;
+  color: white;
+}
+
+.status-read {
+  background-color: #27ae60;
+  color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+  white-space: nowrap;
+}
+
+.btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.btn i {
+  margin-right: 5px;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+/* Button Color Overrides */
 .btn-warning {
   background-color: #f39c12 !important;
   border-color: #f39c12 !important;
@@ -96,7 +196,6 @@ h3 {
 .btn-warning:hover {
   background-color: #e67e22 !important;
   border-color: #e67e22 !important;
-  color: white !important;
 }
 
 .btn-danger {
@@ -108,7 +207,6 @@ h3 {
 .btn-danger:hover {
   background-color: #c0392b !important;
   border-color: #c0392b !important;
-  color: white !important;
 }
 
 .btn-success {
@@ -120,7 +218,6 @@ h3 {
 .btn-success:hover {
   background-color: #229954 !important;
   border-color: #229954 !important;
-  color: white !important;
 }
 
 .btn-primary {
@@ -132,75 +229,37 @@ h3 {
 .btn-primary:hover {
   background-color: #2980b9 !important;
   border-color: #2980b9 !important;
-  color: white !important;
-}
-
-/* Status Badge Styling */
-.badge.bg-success {
-  background-color: #27ae60 !important;
-}
-
-.badge.bg-warning {
-  background-color: #f39c12 !important;
-}
-
-.badge.bg-secondary {
-  background-color: #95a5a6 !important;
-}
-
-/* Pending Requests Section */
-.table {
-  background: white;
-}
-
-.table th {
-  background-color: #34495e !important;
-  color: white !important;
-  border: 1px solid #dee2e6;
-}
-
-.table td {
-  border: 1px solid #dee2e6;
-  vertical-align: middle;
 }
 
 /* SweetAlert Customization */
 .swal2-popup {
   font-size: 14px;
+  border-radius: 8px;
+}
+
+.swal2-title {
+  color: #2c3e50;
 }
 
 .swal2-input,
 .swal2-textarea,
 .swal2-select {
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
   margin: 10px auto !important;
   width: 90% !important;
-  border: 1px solid #ddd !important;
-  border-radius: 4px !important;
-  padding: 8px !important;
+  transition: border-color 0.3s;
 }
 
-/* Form styling inside SweetAlert */
-.swal2-html-container form {
-  text-align: left;
+.swal2-input:focus,
+.swal2-textarea:focus,
+.swal2-select:focus {
+  border-color: #3498db !important;
+  outline: none;
 }
 
-.swal2-html-container label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-.swal2-html-container .form-control,
-.swal2-html-container .form-select {
-  width: 100% !important;
-  margin-bottom: 15px !important;
-  padding: 8px !important;
-  border: 1px solid #ddd !important;
-  border-radius: 4px !important;
-}
-
-/* DataTables styling */
+/* DataTables Styling */
 .dataTables_wrapper {
   background: white;
   padding: 20px;
@@ -210,7 +269,7 @@ h3 {
 .dataTables_filter input {
   border: 1px solid #ddd !important;
   border-radius: 4px !important;
-  padding: 5px !important;
+  padding: 5px 10px !important;
 }
 
 .dataTables_length select {
@@ -218,3 +277,34 @@ h3 {
   border-radius: 4px !important;
   padding: 5px !important;
 }
+
+.dataTables_info,
+.dataTables_paginate {
+  padding-top: 15px !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 15px;
+  }
+  
+  .table th, 
+  .table td {
+    padding: 8px;
+  }
+  
+  .action-buttons .btn {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+  }
+  
+ 
+  
+  .dataTables_wrapper {
+    padding: 15px;
+  }
+}
+
+/* Empty State Styling */

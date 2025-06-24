@@ -58,6 +58,19 @@ CREATE TABLE buyers (
 );
 GO
 
+
+-- Create feedback table
+CREATE TABLE feedback (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_email VARCHAR(255),
+    subject VARCHAR(255),
+    message TEXT,
+    date_submitted DATETIME DEFAULT GETDATE(),
+    status VARCHAR(50) DEFAULT 'unread'
+);
+GO
+
+
 INSERT INTO properties (property_type, price_range, location, area, capacity, description)
 VALUES 
 ('Apartment', '100,000 - 300,000', 'Nairobi, Roysambu', 32, '1-2 persons', 'Located near TRM, Kenyatta University, and Thika Road transport corridor.'),
@@ -84,6 +97,12 @@ SELECT * FROM users;
 SELECT * FROM notifications;
 SELECT * FROM buyers;
 SELECT occupation FROM buyers;
+SELECT * FROM feedback;
+
+
+
+
+
 
 
 
@@ -108,9 +127,13 @@ SELECT DISTINCT user_email FROM notifications;
 -- Check if your specific email has notifications
 SELECT * FROM notifications WHERE user_email = 'your_email_here';
 
-SELECT COUNT(*) as total FROM notifications;
 
-SELECT DISTINCT user_email FROM notifications;
+SELECT COUNT(*) AS feedback_count FROM feedback
+SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'feedback';
 
-INSERT INTO notifications (user_email, message, date_created) 
-VALUES ('jumaleone42@gmail.com', 'Test notification message', GETDATE());
+INSERT INTO feedback (user_email, subject, message) 
+VALUES ('test@example.com', 'Test Subject', 'This is a test feedback message');
+
+
+
+

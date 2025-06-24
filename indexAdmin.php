@@ -17,7 +17,7 @@
                 <button id="loginBtn" class="toggle-btn">Login</button>
             </div>
 
-            <form id="registerForm" action="loginAdmin.php" method="post" class="form">
+            <form id="registerForm" action="adminhome.php" method="post" class="form">
                 <h1>Register</h1>
                 <label for="email">Email:</label>
                 <input type="email" name="email" placeholder="Enter email" required>
@@ -28,7 +28,7 @@
                 <button type="submit" name="signUp">Sign Up</button>
             </form>
 
-            <form id="loginForm" action="loginAdmin.php" method="post" class="form hidden">
+            <form id="loginForm" action="adminhome.php" method="post" class="form hidden">
                 <h1>Login</h1>
                 <label for="username">Email:</label>
                 <input type="text" name="email" placeholder="Enter email" required>

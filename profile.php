@@ -195,7 +195,7 @@ if ($userInfo) {
       <h1>My Profile</h1>
       <div class="profile-info">
         <div class="profile-image-wrapper">
-          <img id="profile-pic" src="data:image/png;base64,..." alt="Profile Picture">
+          
 
           <!-- Pencil icon overlay -->
           <label for="upload" class="edit-icon">✏️</label>

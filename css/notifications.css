@@ -5,10 +5,7 @@
   font-family: Arial, sans-serif;
 }
 
-body {
-  background: linear-gradient(to top, #181827, rgba(56, 57, 58, 0.582));
-  padding-top: 80px; /* Add padding to account for fixed navbar */
-}
+
 
 /* Mobile Responsive Design */
 .custom-navbar, .navbar {
@@ -33,7 +30,7 @@ body {
 
 
 .logo {
-  color: #e0f0ff;
+  color: #000000;
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
@@ -423,3 +420,63 @@ body {
     font-size: 0.8rem;
   }
 }
+
+/* Feedback Form Styling */
+.feedback-form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.feedback-form textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: #f9f9f9;
+  color: #333;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feedback-form textarea:focus {
+  border-color: #2980b9;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(41, 127, 185, 0.973);
+  background-color: white;
+}
+
+.feedback-form button {
+  background-color: #2980b9;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  margin-top: 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.feedback-form button:hover {
+  background-color: #2471a3;
+}
+
+.container h3 {
+  text-align: center;
+  color: #ffffff;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+
+
