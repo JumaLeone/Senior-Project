@@ -21,4 +21,3 @@ if (isset($_POST['id'])) {
         die(print_r(sqlsrv_errors(), true));
     }
 }
-?>

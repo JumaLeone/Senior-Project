@@ -265,6 +265,19 @@ body {
   margin: 8px 0;
 }
 
+.custom-property-deposit {
+    font-size: 0.95rem;
+    color: #444;
+    margin-top: 5px;
+}
+
+.tps-note {
+  font-size: 0.9em;
+  color: #000000;
+  margin-left: 4px;
+}
+
+
 .custom-buy-now {
   background-color: #3498db;
   color: white;

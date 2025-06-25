@@ -247,6 +247,9 @@ $properties = $dbHandler->getProperties($search, $filter);
                 echo '<span>Capacity: ' . htmlspecialchars($row['capacity']) . '</span>';
                 echo '</div>';
                 echo '<div class="custom-property-price">Ksh ' . htmlspecialchars($row['price_range']) . '</div>';
+                echo '<div class="custom-property-deposit">*Deposit: Ksh ' . number_format($row['deposit_fee']) . ' <span class="tps-note">per month on TPS</span></div>';
+
+
                 // Added data-price attribute here
                 echo '<button class="custom-buy-now buy-btn" data-id="' . $row['id'] . '" data-price="' . $row['price_range'] . '">Buy
                     Now</button>';
@@ -307,21 +310,6 @@ $properties = $dbHandler->getProperties($search, $filter);
                             <option value="Retired">Retired</option>
                             <option value="Self Employed">Self Employed</option>
                             <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-
-                    <!-- Salary Range dropdown -->
-                    <div class="form-group">
-                        <label for="salaryRange">Salary Range (Ksh)</label>
-                        <select name="salaryRange" id="salaryRange" class="form-control" required>
-                            <option value="" disabled selected>Select salary range</option>
-                            <option value="0-50000">0 - 50,000</option>
-                            <option value="50001-100000">50,001 - 100,000</option>
-                            <option value="100001-150000">100,001 - 150,000</option>
-                            <option value="150001-200000">150,001 - 200,000</option>
-                            <option value="200001-250000">200,001 - 250,000</option>
-                            <option value="200001-250000">250,001 - 300,000</option>
                         </select>
                     </div>
 

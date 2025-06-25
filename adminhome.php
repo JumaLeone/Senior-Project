@@ -264,7 +264,7 @@ if ($tableCheck && sqlsrv_fetch_array($tableCheck)) {
 
     <h1 class="mb-4">Admin Dashboard</h1>
 
-   
+
 
     <div class="mb-5">
         <h3>Add New Property</h3>

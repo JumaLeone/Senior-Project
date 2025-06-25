@@ -5,7 +5,9 @@
   font-family: Arial, sans-serif;
 }
 
-
+body{
+  background-color: #a9b6be;
+}
 
 /* Mobile Responsive Design */
 .custom-navbar, .navbar {

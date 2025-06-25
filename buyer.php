@@ -38,9 +38,9 @@ abstract class Base
 
     abstract public function execute($data);
 }
- 
+
 class SubmitBuyer extends Base
-{ 
+{
     public function execute($data)
     {
         $data['user_id'] = $_SESSION['user_id'];

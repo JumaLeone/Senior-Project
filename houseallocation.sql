@@ -43,6 +43,9 @@ CREATE TABLE properties (
 );
 GO
 
+ALTER TABLE properties
+ADD deposit_fee INT;
+
 -- Create buyers table
 CREATE TABLE buyers (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -71,25 +74,24 @@ CREATE TABLE feedback (
 GO
 
 
-INSERT INTO properties (property_type, price_range, location, area, capacity, description)
+
+INSERT INTO properties 
+(property_type, price_range, location, area, capacity, description, deposit_fee)
 VALUES 
-('Apartment', '100,000 - 300,000', 'Nairobi, Roysambu', 32, '1-2 persons', 'Located near TRM, Kenyatta University, and Thika Road transport corridor.'),
-('Apartment', '100,000 - 300,000', 'Nakuru, Free Area', 32, '1-2 persons', 'Near Egerton University campus annex, supermarkets, and matatu routes.'),
-('Apartment', '150,000 - 300,000', 'Kisumu, Nyalenda', 32, '1-2 persons', 'Close to Kisumu CBD, shopping centers, and Kisumu Polytechnic.'),
-('Residential Lot', '200,000 - 300,000', 'Machakos, Matuu', 50, 'N/A (Lot only)', 'Situated in a gated area near local markets, schools, and dispensaries.'),
-('Condo', '250,000 - 300,000', 'Kakamega, Amalemba', 35, '1-2 persons', 'Located near Masinde Muliro University and Kakamega Forest Park.'),
-('House and Lot', '280,000 - 300,000', 'Bungoma, Kanduyi', 60, '3-4 persons', 'Located in a developing estate near Bungoma town and schools.'),
-('Apartment', '180,000 - 300,000', 'Embu, Majimbo', 40, '2-3 persons', 'Close to Embu University and Embu Level 5 Hospital.'),
-('Commercial', '250,000 - 300,000', 'Kitale, Matisi', 70, 'N/A (Commercial)', 'Near Kitale Bus Park and agricultural produce market.'),
-('Residential Lot', '200,000 - 300,000', 'Kajiado, Isinya', 80, 'N/A (Lot only)', 'Quiet area near public transport, markets, and churches.'),
-('House and Lot', '200,000 - 300,000', 'Nyeri, King''ong''o', 65, '3-4 persons', 'Peaceful neighborhood near Nyeri town and tea-growing areas.'),
-('Condo', '200,000 - 300,000', 'Nyahururu, Town Centre', 30, '1 person', 'Close to Nyahururu Waterfalls, parks, and shopping areas.'),
-('Residential Lot', '100,000 - 200,000', 'Taita Taveta, Voi', 100, 'N/A (Lot only)', 'Quiet zone near Tsavo, government offices, and local amenities.');
-
+('Apartment', '320,000', 'Eldoret, Kapsoya', 32, '1-2 persons', 'Modern apartment near Rupa Mall and Eldoret Hospital.', 12000),
+('Apartment', '280,000', 'Eldoret, Langas', 32, '1-2 persons', 'Accessible location near Langas Market and public transport.', 10000),
+('Apartment', '300,000', 'Eldoret, Elgon View', 32, '1-2 persons', 'Serene neighborhood close to Eldoret Club and hospitals.', 13000),
+('Residential Lot', '220,000', 'Turbo, Township', 50, 'N/A (Lot only)', 'Gated plot close to Turbo Town center and market.', 10000),
+('Condo', '350,000', 'Eldoret, West Indies', 35, '1-2 persons', 'Secure area near Uasin Gishu Primary and sports clubs.', 14000),
+('House and Lot', '390,000', 'Moi’s Bridge, Township', 60, '3-4 persons', 'Growing estate near Moi’s Bridge trading center.', 25000),
+('Apartment', '330,000', 'Eldoret, Maili Nne', 40, '2-3 persons', 'Near University of Eldoret access route and shopping zones.', 18000),
+('Commercial', '380,000', 'Burnt Forest, Market Area', 70, 'N/A (Commercial)', 'Prime space near the matatu terminus and produce market.', 20000),
+('Residential Lot', '240,000', 'Kesses, Moi University Vicinity', 80, 'N/A (Lot only)', 'Quiet area ideal for development near Moi University.', 12000),
+('House and Lot', '360,000', 'Ziwa, Town Outskirts', 65, '3-4 persons', 'Peaceful suburb near Ziwa Technical and shopping zone.', 22000),
+('Condo', '340,000', 'Eldoret, Pioneer', 30, '1 person', 'Secure gated community near Eldoret Polytechnic.', 11000),
+('Residential Lot', '180,000', 'Flax, Chepkorio Road', 100, 'N/A (Lot only)', 'Lush plot ideal for residential use near scenic views.', 10000);
 GO
 
-USE php_project;
-GO
 
 SELECT * FROM properties;
 SELECT * FROM admin_users;
@@ -101,19 +103,17 @@ SELECT * FROM feedback;
 
 
 
-
-
-
+SELECT COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'properties' AND COLUMN_NAME = 'deposit_fee'
 
 
 -- If the table is now empty and you want IDs to start from 1
-DBCC CHECKIDENT ('buyers', RESEED, 0);
+DBCC CHECKIDENT ('properties', RESEED, 0);
 
 ALTER TABLE buyers
 ADD occupation VARCHAR(100) NOT NULL DEFAULT 'Other';
 
-DELETE FROM buyers;
-GO
 
 DBCC CHECKIDENT ('buyers', RESEED, 0);
 GO

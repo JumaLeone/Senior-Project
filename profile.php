@@ -68,6 +68,20 @@ if ($userInfo) {
     }
   }
 }
+
+// Fetch average assignment duration (in days)
+$avgTimeQuery = "
+  SELECT AVG(DATEDIFF(DAY, b.application_date, b.assigned_date)) AS avg_days
+  FROM buyers b
+  WHERE b.user_id = ? AND b.status = 'approved' AND b.application_date IS NOT NULL AND b.assigned_date IS NOT NULL
+";
+$avgTimeStmt = sqlsrv_query($conn, $avgTimeQuery, [$userId]);
+$avgAssignmentTime = null;
+
+if ($avgTimeStmt && $row = sqlsrv_fetch_array($avgTimeStmt, SQLSRV_FETCH_ASSOC)) {
+  $avgAssignmentTime = round($row['avg_days']);
+}
+
 ?>
 
 
@@ -195,7 +209,7 @@ if ($userInfo) {
       <h1>My Profile</h1>
       <div class="profile-info">
         <div class="profile-image-wrapper">
-          
+
 
           <!-- Pencil icon overlay -->
           <label for="upload" class="edit-icon">✏️</label>
@@ -223,6 +237,14 @@ if ($userInfo) {
       </div>
 
       <div class="property-section">
+        <div style="text-align: right; margin-bottom: 10px;">
+
+
+          <button class="btn btn-danger" onclick="generatePDF()">
+            <i class="fas fa-file-pdf"></i> Download PDF Report
+          </button>
+        </div>
+
         <h2>Purchased Properties</h2>
         <?php if (!empty($purchasedProperties)): ?>
           <?php foreach ($purchasedProperties as $property): ?>
@@ -324,6 +346,24 @@ if ($userInfo) {
         reader.readAsDataURL(file);
       }
     });
+
+    function deleteNotification(id) {
+      if (confirm('Delete this notification?')) {
+        fetch('deleteNotification.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + id
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              location.reload();
+            }
+          });
+      }
+    }
   </script>
 
   <footer class="footer">
@@ -331,26 +371,88 @@ if ($userInfo) {
       <p>&copy; 2025 KeyNest. All rights reserved.</p>
     </div>
   </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+  <script>
+    async function generatePDF() {
+      const {
+        jsPDF
+      } = window.jspdf;
+      const doc = new jsPDF();
+
+      // Title
+      doc.setFontSize(18);
+      doc.text("Purchased Properties Report", 14, 20);
+
+      // User Info
+      doc.setFontSize(12);
+      doc.text("Username: <?= $userInfo['username'] ?>", 14, 30);
+      doc.text("Email: <?= $userInfo['email'] ?>", 14, 37);
+
+      // Table Header
+      const tableHead = [
+        ["Type", "Price Range", "Location", "Area", "Capacity", "Status"]
+      ];
+
+      // Table Data
+      const tableData = [
+        <?php foreach ($purchasedProperties as $property): ?>[
+            "<?= $property['property_type'] ?>",
+            "<?= $property['price_range'] ?>",
+            "<?= $property['location'] ?>",
+            "<?= $property['area'] ?> sq ft",
+            "<?= $property['capacity'] ?>",
+            "<?= ucfirst($property['status']) ?>"
+          ],
+        <?php endforeach; ?>
+      ];
+
+      // Table
+      doc.autoTable({
+        startY: 45,
+        head: tableHead,
+        body: tableData,
+        styles: {
+          fontSize: 10,
+          cellPadding: 3,
+        },
+        headStyles: {
+          fillColor: [220, 53, 69] // Bootstrap red
+        }
+      });
+
+      // Save the PDF
+      doc.save("Purchased_Properties_Report.pdf");
+    }
+  </script>
+  <style>
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #a71d2a;
+    }
+  </style>
+
+
+
+
 </body>
 
 </html>
 
 <script>
-  function deleteNotification(id) {
-    if (confirm('Delete this notification?')) {
-      fetch('deleteNotification.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: 'id=' + id
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            location.reload();
-          }
-        });
-    }
-  }
+
 </script>

@@ -9,14 +9,12 @@ if (isset($_POST['submit_feedback'])) {
   $subject = trim($_POST['subject']);
   $message = trim($_POST['message']);
 
-  // Validate inputs
   if (empty($subject) || empty($message)) {
     $_SESSION['feedback_message'] = "Please fill in all fields";
     header("Location: notifications.php");
     exit();
   }
 
-  // Prepare and execute query
   $sql = "INSERT INTO feedback (user_email, subject, message) VALUES (?, ?, ?)";
   $params = array($userEmail, $subject, $message);
   $stmt = sqlsrv_prepare($conn, $sql, $params);
@@ -27,17 +25,16 @@ if (isset($_POST['submit_feedback'])) {
     $_SESSION['feedback_message'] = "Error submitting feedback. Please try again.";
     error_log("Feedback error: " . print_r(sqlsrv_errors(), true));
   }
+
   sqlsrv_free_stmt($stmt);
   header("Location: notifications.php");
   exit();
 }
 
-// Fetch notifications
 $sql = "SELECT * FROM notifications WHERE user_email = ? ORDER BY date_created DESC";
 $params = array($userEmail);
 $notifications = sqlsrv_query($conn, $sql, $params);
 
-// Check if the query failed
 if ($notifications === false) {
   echo "Query failed:<br>";
   die(print_r(sqlsrv_errors(), true));
@@ -48,21 +45,20 @@ if ($notifications === false) {
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notifications - KeyNest</title>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-  <link rel="stylesheet" href="./css/notifications.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- External Styles -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+  <link rel="stylesheet" href="./css/notifications.css" />
+
   <style>
     .feedback-section {
       margin-top: 40px;
       padding: 30px;
       background: rgba(255, 255, 255, 0.8);
-      /* Frosted glass effect */
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border-radius: 12px;
@@ -131,6 +127,18 @@ if ($notifications === false) {
       background: #0056b3;
       transform: translateY(-2px);
     }
+
+    @media screen and (max-width: 768px) {
+
+      .container h2,
+      .container h3 {
+        font-size: 1.4rem;
+        color: #111 !important;
+        text-align: center;
+        display: block;
+        margin: 1.5rem auto 1rem;
+      }
+    }
   </style>
 </head>
 
@@ -138,8 +146,6 @@ if ($notifications === false) {
   <!-- Navbar -->
   <nav class="navbar">
     <a href="homepage.php" class="logo">KeyNest</a>
-
-    <!-- Desktop Menu -->
     <div class="menu">
       <ul>
         <li><a href="homepage.php">HOME</a></li>
@@ -149,17 +155,8 @@ if ($notifications === false) {
         <li><a href="homepage.php#about">ABOUT</a></li>
       </ul>
     </div>
-
-    <!-- Mobile Menu Toggle -->
-    <div class="menu-toggle" id="menuToggle">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
+    <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
     <a href="logout.php" class="btn">LOGOUT</a>
-
-    <!-- Mobile Dropdown Menu -->
     <div class="mobile-dropdown" id="mobileDropdown">
       <ul>
         <li><a href="homepage.php">HOME</a></li>
@@ -207,7 +204,7 @@ if ($notifications === false) {
       <form method="POST" action="notifications.php" class="feedback-form">
         <div class="form-group">
           <label for="subject">Subject:</label>
-          <input type="text" id="subject" name="subject" required>
+          <input type="text" id="subject" name="subject" required />
         </div>
         <div class="form-group">
           <label for="message">Message:</label>
@@ -218,15 +215,25 @@ if ($notifications === false) {
     </div>
   </div>
 
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>&copy; 2025 KeyNest. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts loaded at the bottom -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+  <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
   <script>
-    $(document).ready(function() {
+    window.addEventListener("load", () => {
       $('#notificationsTable').DataTable({
         order: [
           [1, 'desc']
         ]
       });
 
-      // Show feedback message if exists
       <?php if (isset($_SESSION['feedback_message'])): ?>
         Swal.fire({
           title: 'Feedback',
@@ -252,77 +259,53 @@ if ($notifications === false) {
           const form = document.createElement('form');
           form.method = 'POST';
           form.action = 'deleteNotification.php';
-
           const input = document.createElement('input');
           input.type = 'hidden';
           input.name = 'id';
           input.value = id;
-
           form.appendChild(input);
           document.body.appendChild(form);
           form.submit();
         }
       });
     }
-  </script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', () => {
       const menuToggle = document.getElementById('menuToggle');
       const mobileDropdown = document.getElementById('mobileDropdown');
       let isMenuOpen = false;
 
-      menuToggle.addEventListener('click', function() {
+      menuToggle.addEventListener('click', () => {
         isMenuOpen = !isMenuOpen;
-
-        // Toggle hamburger animation
         menuToggle.classList.toggle('active');
-
-        // Toggle dropdown menu
         if (isMenuOpen) {
           mobileDropdown.style.display = 'block';
-          // Small delay to ensure display:block is applied before animation
-          setTimeout(() => {
-            mobileDropdown.classList.add('show');
-          }, 10);
+          setTimeout(() => mobileDropdown.classList.add('show'), 10);
         } else {
           mobileDropdown.classList.remove('show');
-          // Hide after animation completes
-          setTimeout(() => {
-            mobileDropdown.style.display = 'none';
-          }, 300);
+          setTimeout(() => mobileDropdown.style.display = 'none', 300);
         }
       });
 
-      // Close menu when clicking outside
-      document.addEventListener('click', function(e) {
-        if (!menuToggle.contains(e.target) && !mobileDropdown.contains(e.target)) {
-          if (isMenuOpen) {
-            isMenuOpen = false;
-            menuToggle.classList.remove('active');
-            mobileDropdown.classList.remove('show');
-            setTimeout(() => {
-              mobileDropdown.style.display = 'none';
-            }, 300);
-          }
-        }
-      });
-
-      // Close menu when clicking on a link
-      const mobileLinks = mobileDropdown.querySelectorAll('a');
-      mobileLinks.forEach(link => {
-        link.addEventListener('click', function() {
+      document.addEventListener('click', (e) => {
+        if (!menuToggle.contains(e.target) && !mobileDropdown.contains(e.target) && isMenuOpen) {
           isMenuOpen = false;
           menuToggle.classList.remove('active');
           mobileDropdown.classList.remove('show');
-          setTimeout(() => {
-            mobileDropdown.style.display = 'none';
-          }, 300);
+          setTimeout(() => mobileDropdown.style.display = 'none', 300);
+        }
+      });
+
+      mobileDropdown.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          isMenuOpen = false;
+          menuToggle.classList.remove('active');
+          mobileDropdown.classList.remove('show');
+          setTimeout(() => mobileDropdown.style.display = 'none', 300);
         });
       });
 
-      // Handle window resize
-      window.addEventListener('resize', function() {
+      window.addEventListener('resize', () => {
         if (window.innerWidth > 768 && isMenuOpen) {
           isMenuOpen = false;
           menuToggle.classList.remove('active');
@@ -332,13 +315,6 @@ if ($notifications === false) {
       });
     });
   </script>
-
-  <footer class="footer">
-    <div class="footer-bottom">
-      <p>&copy; 2025 KeyNest. All rights reserved.</p>
-    </div>
-  </footer>
-
 </body>
 
 </html>
