@@ -7,7 +7,7 @@
 }
 
 body {
-  background: linear-gradient(to top, #181827, rgba(56, 57, 58, 0.582));
+  background-color: #a9b6be;
   padding-top: 80px; /* Add padding to account for fixed navbar */
 }
 
