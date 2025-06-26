@@ -767,10 +767,31 @@ try {
                 }
             });
         }
+
+        function confirmLogout() {
+            Swal.fire({
+                title: 'Are you sure you want to logout?',
+                text: "You will be redirected to the login page.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, logout',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'logoutAdmin.php';
+                }
+            });
+        }
     </script>
 
     <!-- Load Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <a href="#" class="btn btn-outline-danger float-end" onclick="confirmLogout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+
 </body>
 
 </html>

@@ -193,7 +193,7 @@ if ($notifications === false) {
 
     <!-- Feedback Section -->
     <div class="feedback-section">
-      <h3>Send Feedback</h3>
+      <h3>Applicant Feedback</h3>
       <?php if (isset($_SESSION['feedback_message'])): ?>
         <div class="alert alert-<?= strpos($_SESSION['feedback_message'], 'Thank') !== false ? 'success' : 'danger' ?>">
           <?= $_SESSION['feedback_message'] ?>

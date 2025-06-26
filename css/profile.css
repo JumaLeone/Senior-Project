@@ -60,13 +60,13 @@ body {
 }
 
 .menu a:hover {
-  color: #66aaff;
-  background: rgba(255, 255, 255, 0.1);
+  color: #fcfcfc;
+  background: rgba(61, 61, 61, 0.445);
 }
 
 .menu a.active {
-  color: #66aaff;
-  background: rgba(102, 170, 255, 0.2);
+  color: #fcfcfc;
+  background: rgba(61, 61, 61, 0.445);
 }
 
 .btn {
