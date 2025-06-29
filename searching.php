@@ -251,8 +251,8 @@ $properties = $dbHandler->getProperties($search, $filter);
 
 
                 // Added data-price attribute here
-                echo '<button class="custom-buy-now buy-btn" data-id="' . $row['id'] . '" data-price="' . $row['price_range'] . '">Buy
-                    Now</button>';
+                echo '<button class="custom-buy-now buy-btn" data-id="' . $row['id'] . '" data-price="' . $row['deposit_fee'] . '">Buy Now</button>';
+
                 echo '</div>';
                 echo '</div>';
             }
@@ -318,8 +318,23 @@ $properties = $dbHandler->getProperties($search, $filter);
                         <textarea name="message" id="message" class="form-control" rows="4"></textarea>
                     </div>
                 </div>
+
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" name="submitBuyer" class="btn btn-primary">Buy</button>
+                    <div class="payment-options">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="mpesaOption" value="mpesa" checked>
+                            <label class="form-check-label" for="mpesaOption">
+                                Pay via M-Pesa
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cashOption" value="cash">
+                            <label class="form-check-label" for="cashOption">
+                                Pay with Bank
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" name="submitBuyer" class="btn btn-primary">Proceed to Payment</button>
                 </div>
             </form>
         </div>
@@ -331,7 +346,9 @@ $properties = $dbHandler->getProperties($search, $filter);
             const propertyIdInput = document.getElementById('propertyId');
             const propertyPriceInput = document.getElementById('propertyPrice');
             const buyerForm = document.getElementById('buyerForm');
+            const buyModal = new bootstrap.Modal(document.getElementById('buyModal'));
 
+            // Handle Buy Now button clicks
             buyButtons.forEach(function(button) {
                 button.addEventListener('click', function() {
                     const propertyId = this.getAttribute('data-id');
@@ -340,40 +357,47 @@ $properties = $dbHandler->getProperties($search, $filter);
                     propertyIdInput.value = propertyId;
                     propertyPriceInput.value = propertyPrice;
 
-                    const modal = new bootstrap.Modal(document.getElementById('buyModal'));
-                    modal.show();
+                    buyModal.show();
                 });
             });
 
-            buyerForm.addEventListener('submit', function(e) {
-                const salaryRangeValue = document.getElementById('salaryRange').value;
-
-                // Extract max salary from range string like "0-50000"
-                // We use max value to compare with property price
-                let salaryRange = 0;
-                if (salaryRangeValue.includes('-')) {
-                    salaryRange = parseInt(salaryRangeValue.split('-')[1].replace(/,/g, '').trim());
-                } else {
-                    salaryRange = parseInt(salaryRangeValue);
-                }
-
-                const propertyPrice = parseInt(propertyPriceInput.value);
-
-                if (isNaN(salaryRange) || isNaN(propertyPrice)) {
-                    alert('Salary range or property price is invalid.');
+            // Handle form submission
+            if (buyerForm) {
+                buyerForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    return;
-                }
 
-                if (salaryRange < propertyPrice) {
-                    alert('Your salary range does not meet the property price requirement. Purchase not permitted.');
-                    e.preventDefault();
-                    return;
+                    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                    const propertyPrice = document.getElementById('propertyPrice').value;
+
+                    if (paymentMethod === 'mpesa' && propertyPrice > 0) {
+                        // For M-Pesa payments
+                        this.action = 'process_payment.php';
+                    } else {
+                        // For cash payments or free properties
+                        this.action = 'buyer.php';
+                    }
+
+                    // Submit the form
+                    this.submit();
+                });
+            }
+
+            // Close menu when clicking outside (existing code)
+            document.addEventListener('click', function(e) {
+                if (!menuToggle.contains(e.target) && !mobileDropdown.contains(e.target)) {
+                    if (isMenuOpen) {
+                        isMenuOpen = false;
+                        menuToggle.classList.remove('active');
+                        mobileDropdown.classList.remove('show');
+                        setTimeout(() => {
+                            mobileDropdown.style.display = 'none';
+                        }, 300);
+                    }
                 }
-                // else form submits normally
             });
         });
     </script>
+
 
     <footer class="footer">
         <div class="footer-bottom">

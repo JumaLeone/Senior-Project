@@ -43,6 +43,7 @@ CREATE TABLE properties (
     description TEXT NOT NULL
 );
 GO
+
 ALTER TABLE properties
 ADD deposit_fee INT;
 
@@ -61,6 +62,8 @@ CREATE TABLE buyers (
 );
 GO
 
+ALTER TABLE buyers ADD payment_method VARCHAR(20);
+
 
 -- Create feedback table
 CREATE TABLE feedback (
@@ -73,6 +76,29 @@ CREATE TABLE feedback (
 );
 GO
 
+CREATE TABLE payments (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    invoice_id VARCHAR(100),
+    property_id INT,
+    amount DECIMAL(10,2),
+    phone VARCHAR(20),
+    status VARCHAR(50),
+    payment_method VARCHAR(20),
+    created_at DATETIME DEFAULT GETDATE()
+);
+GO
+SELECT * FROM payments ORDER BY created_at DESC;
+
+
+
+ALTER TABLE payments
+ADD CONSTRAINT FK_payments_property_id
+FOREIGN KEY (property_id) REFERENCES properties(id);
+SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS;
+
+ALTER TABLE payments
+ADD mpesa_receipt VARCHAR(50);
+
 
 
 INSERT INTO properties 
@@ -83,7 +109,7 @@ VALUES
 ('Apartment', '300,000', 'Eldoret, Elgon View', 32, '1-2 persons', 'Serene neighborhood close to Eldoret Club and hospitals.', 13000),
 ('Residential Lot', '220,000', 'Turbo, Township', 50, 'N/A (Lot only)', 'Gated plot close to Turbo Town center and market.', 10000),
 ('Condo', '350,000', 'Eldoret, West Indies', 35, '1-2 persons', 'Secure area near Uasin Gishu Primary and sports clubs.', 14000),
-('House and Lot', '390,000', 'Moiâ€™s Bridge, Township', 60, '3-4 persons', 'Growing estate near Moiâ€™s Bridge trading center.', 25000),
+('House and Lot', '390,000', 'Moi’s Bridge, Township', 60, '3-4 persons', 'Growing estate near Moi’s Bridge trading center.', 25000),
 ('Apartment', '330,000', 'Eldoret, Maili Nne', 40, '2-3 persons', 'Near University of Eldoret access route and shopping zones.', 18000),
 ('Commercial', '380,000', 'Burnt Forest, Market Area', 70, 'N/A (Commercial)', 'Prime space near the matatu terminus and produce market.', 20000),
 ('Residential Lot', '240,000', 'Kesses, Moi University Vicinity', 80, 'N/A (Lot only)', 'Quiet area ideal for development near Moi University.', 12000),
@@ -92,6 +118,13 @@ VALUES
 ('Residential Lot', '180,000', 'Flax, Chepkorio Road', 100, 'N/A (Lot only)', 'Lush plot ideal for residential use near scenic views.', 10000);
 GO
 
+UPDATE properties 
+SET deposit_fee = 1
+WHERE location = 'Eldoret, Kapsoya' 
+AND property_type = 'Apartment'
+AND deposit_fee = 12000;
+
+SELECT * FROM properties WHERE location = 'Eldoret, Kapsoya';
 
 SELECT * FROM properties;
 SELECT * FROM admin_users;
@@ -99,10 +132,16 @@ SELECT * FROM users;
 SELECT * FROM notifications;
 SELECT * FROM buyers;
 SELECT * FROM feedback;
+SELECT * FROM payments;
+
+
+DELETE FROM buyers
+
 
 SELECT occupation FROM buyers;
 
-
+UPDATE payments
+SET status = 'Paid';
 
 
 
@@ -118,7 +157,7 @@ ALTER TABLE buyers
 ADD occupation VARCHAR(100) NOT NULL DEFAULT 'Other';
 
 
-DBCC CHECKIDENT ('buyers', RESEED, 0);
+DBCC CHECKIDENT ('payments', RESEED, 0);
 GO
 
 -- Check if table exists and has data
@@ -135,7 +174,7 @@ SELECT COUNT(*) AS feedback_count FROM feedback
 SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'feedback';
 
 INSERT INTO feedback (user_email, subject, message) 
-VALUES ('test@example.com', 'Test Subject', 'This is a test feedback message');
+
 
 
 
