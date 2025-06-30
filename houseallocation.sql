@@ -4,6 +4,7 @@ GO
 USE php_project;
 GO
 
+--create admins table
 CREATE TABLE admin_users (
     id INT PRIMARY KEY IDENTITY(1,1),
     username VARCHAR(50) NOT NULL,
@@ -12,8 +13,7 @@ CREATE TABLE admin_users (
 );
 GO
 
-
-
+--create users table
 CREATE TABLE users (
     id INT PRIMARY KEY IDENTITY(1,1),
     username VARCHAR(50) NOT NULL,
@@ -43,9 +43,9 @@ CREATE TABLE properties (
     description TEXT NOT NULL
 );
 GO
-
 ALTER TABLE properties
 ADD deposit_fee INT;
+
 
 -- Create buyers table
 CREATE TABLE buyers (
@@ -61,6 +61,8 @@ CREATE TABLE buyers (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 GO
+ALTER TABLE buyers
+ADD occupation VARCHAR(100) NOT NULL DEFAULT 'Other';
 
 ALTER TABLE buyers ADD payment_method VARCHAR(20);
 
@@ -76,6 +78,7 @@ CREATE TABLE feedback (
 );
 GO
 
+--create payments table
 CREATE TABLE payments (
     id INT PRIMARY KEY IDENTITY(1,1),
     invoice_id VARCHAR(100),
@@ -87,18 +90,15 @@ CREATE TABLE payments (
     created_at DATETIME DEFAULT GETDATE()
 );
 GO
-SELECT * FROM payments ORDER BY created_at DESC;
-
-
-
-ALTER TABLE payments
-ADD CONSTRAINT FK_payments_property_id
-FOREIGN KEY (property_id) REFERENCES properties(id);
-SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS;
 
 ALTER TABLE payments
 ADD mpesa_receipt VARCHAR(50);
 
+ALTER TABLE payments
+ADD CONSTRAINT FK_payments_property_id
+FOREIGN KEY (property_id) REFERENCES properties(id);
+
+SELECT * FROM payments ORDER BY created_at DESC;
 
 
 INSERT INTO properties 
@@ -109,7 +109,7 @@ VALUES
 ('Apartment', '300,000', 'Eldoret, Elgon View', 32, '1-2 persons', 'Serene neighborhood close to Eldoret Club and hospitals.', 13000),
 ('Residential Lot', '220,000', 'Turbo, Township', 50, 'N/A (Lot only)', 'Gated plot close to Turbo Town center and market.', 10000),
 ('Condo', '350,000', 'Eldoret, West Indies', 35, '1-2 persons', 'Secure area near Uasin Gishu Primary and sports clubs.', 14000),
-('House and Lot', '390,000', 'Moi’s Bridge, Township', 60, '3-4 persons', 'Growing estate near Moi’s Bridge trading center.', 25000),
+('House and Lot', '390,000', 'Moiâ€™s Bridge, Township', 60, '3-4 persons', 'Growing estate near Moiâ€™s Bridge trading center.', 25000),
 ('Apartment', '330,000', 'Eldoret, Maili Nne', 40, '2-3 persons', 'Near University of Eldoret access route and shopping zones.', 18000),
 ('Commercial', '380,000', 'Burnt Forest, Market Area', 70, 'N/A (Commercial)', 'Prime space near the matatu terminus and produce market.', 20000),
 ('Residential Lot', '240,000', 'Kesses, Moi University Vicinity', 80, 'N/A (Lot only)', 'Quiet area ideal for development near Moi University.', 12000),
@@ -118,13 +118,6 @@ VALUES
 ('Residential Lot', '180,000', 'Flax, Chepkorio Road', 100, 'N/A (Lot only)', 'Lush plot ideal for residential use near scenic views.', 10000);
 GO
 
-UPDATE properties 
-SET deposit_fee = 1
-WHERE location = 'Eldoret, Kapsoya' 
-AND property_type = 'Apartment'
-AND deposit_fee = 12000;
-
-SELECT * FROM properties WHERE location = 'Eldoret, Kapsoya';
 
 SELECT * FROM properties;
 SELECT * FROM admin_users;
@@ -136,25 +129,12 @@ SELECT * FROM payments;
 
 
 DELETE FROM buyers
-
-
 SELECT occupation FROM buyers;
+
+
 
 UPDATE payments
 SET status = 'Paid';
-
-
-
-SELECT COLUMN_NAME
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME = 'properties' AND COLUMN_NAME = 'deposit_fee'
-
-
--- If the table is now empty and you want IDs to start from 1
-DBCC CHECKIDENT ('properties', RESEED, 0);
-
-ALTER TABLE buyers
-ADD occupation VARCHAR(100) NOT NULL DEFAULT 'Other';
 
 
 DBCC CHECKIDENT ('payments', RESEED, 0);

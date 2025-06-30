@@ -362,6 +362,7 @@ $properties = $dbHandler->getProperties($search, $filter);
             });
 
             // Handle form submission
+            // Handle form submission
             if (buyerForm) {
                 buyerForm.addEventListener('submit', function(e) {
                     e.preventDefault();
@@ -370,10 +371,13 @@ $properties = $dbHandler->getProperties($search, $filter);
                     const propertyPrice = document.getElementById('propertyPrice').value;
 
                     if (paymentMethod === 'mpesa' && propertyPrice > 0) {
-                        // For M-Pesa payments
+                        // For M-Pesa payments - redirect to payment processing
                         this.action = 'process_payment.php';
+                    } else if (paymentMethod === 'cash' || paymentMethod === 'bank') {
+                        // For bank/cash payments - redirect to buyer.php
+                        this.action = 'buyer.php';
                     } else {
-                        // For cash payments or free properties
+                        // Default fallback to buyer.php
                         this.action = 'buyer.php';
                     }
 
