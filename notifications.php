@@ -40,7 +40,6 @@ if ($notifications === false) {
   die(print_r(sqlsrv_errors(), true));
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -194,13 +193,6 @@ if ($notifications === false) {
     <!-- Feedback Section -->
     <div class="feedback-section">
       <h3>Applicant Feedback</h3>
-      <?php if (isset($_SESSION['feedback_message'])): ?>
-        <div class="alert alert-<?= strpos($_SESSION['feedback_message'], 'Thank') !== false ? 'success' : 'danger' ?>">
-          <?= $_SESSION['feedback_message'] ?>
-        </div>
-        <?php unset($_SESSION['feedback_message']); ?>
-      <?php endif; ?>
-
       <form method="POST" action="notifications.php" class="feedback-form">
         <div class="form-group">
           <label for="subject">Subject:</label>
@@ -227,7 +219,7 @@ if ($notifications === false) {
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
   <script>
-    window.addEventListener("load", () => {
+    document.addEventListener("DOMContentLoaded", () => {
       $('#notificationsTable').DataTable({
         order: [
           [1, 'desc']
@@ -241,7 +233,6 @@ if ($notifications === false) {
           icon: '<?= strpos($_SESSION['feedback_message'], 'successfully') !== false ? 'success' : 'error' ?>',
           confirmButtonText: 'OK'
         });
-        <?php unset($_SESSION['feedback_message']); ?>
       <?php endif; ?>
     });
 
@@ -318,3 +309,10 @@ if ($notifications === false) {
 </body>
 
 </html>
+
+<?php
+// Clear feedback message session after page load
+if (isset($_SESSION['feedback_message'])) {
+  unset($_SESSION['feedback_message']);
+}
+?>

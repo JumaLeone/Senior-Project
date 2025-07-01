@@ -362,14 +362,23 @@ $properties = $dbHandler->getProperties($search, $filter);
             });
 
             // Handle form submission
-            // Handle form submission
+            // Handle form submission - FIXED to include submit button data
             if (buyerForm) {
                 buyerForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-
                     const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
                     const propertyPrice = document.getElementById('propertyPrice').value;
 
+                    // ADD HIDDEN INPUT FOR SUBMIT BUTTON
+                    let submitInput = document.querySelector('input[name="submitBuyer"]');
+                    if (!submitInput) {
+                        submitInput = document.createElement('input');
+                        submitInput.type = 'hidden';
+                        submitInput.name = 'submitBuyer';
+                        submitInput.value = 'Proceed to Payment';
+                        this.appendChild(submitInput);
+                    }
+
+                    // Set the correct action based on payment method BEFORE submission
                     if (paymentMethod === 'mpesa' && propertyPrice > 0) {
                         // For M-Pesa payments - redirect to payment processing
                         this.action = 'process_payment.php';
@@ -381,24 +390,31 @@ $properties = $dbHandler->getProperties($search, $filter);
                         this.action = 'buyer.php';
                     }
 
-                    // Submit the form
-                    this.submit();
+                    // Let the form submit naturally
+                    // Now the submitBuyer field will be included
                 });
             }
 
-            // Close menu when clicking outside (existing code)
-            document.addEventListener('click', function(e) {
-                if (!menuToggle.contains(e.target) && !mobileDropdown.contains(e.target)) {
-                    if (isMenuOpen) {
-                        isMenuOpen = false;
-                        menuToggle.classList.remove('active');
-                        mobileDropdown.classList.remove('show');
-                        setTimeout(() => {
-                            mobileDropdown.style.display = 'none';
-                        }, 300);
+            // FIXED: Get menu variables within this scope or remove this section
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileDropdown = document.getElementById('mobileDropdown');
+            let isMenuOpen = false;
+
+            // Close menu when clicking outside (if menu elements exist)
+            if (menuToggle && mobileDropdown) {
+                document.addEventListener('click', function(e) {
+                    if (!menuToggle.contains(e.target) && !mobileDropdown.contains(e.target)) {
+                        if (isMenuOpen) {
+                            isMenuOpen = false;
+                            menuToggle.classList.remove('active');
+                            mobileDropdown.classList.remove('show');
+                            setTimeout(() => {
+                                mobileDropdown.style.display = 'none';
+                            }, 300);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     </script>
 

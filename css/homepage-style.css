@@ -23,6 +23,45 @@
   border-radius: 0 0 16px 16px;
   min-height: 70px;
 }
+.navigation {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 20;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-dot.active {
+  background: white;
+  transform: scale(1.2);
+}
+
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.8);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.1s ease-out;
+  z-index: 25;
+}
 
 .logo {
   color: #e0f0ff; /* lighter, soft blue */
@@ -175,9 +214,9 @@
   height: 100vh;
   overflow: hidden;
   background-color: #ddd4d4;
-  margin-top: 0; /* Ensure there's no margin pushing it down */
+  margin-top: 0;
   padding-top: 0;
-  z-index: 0; /* Explicitly place it behind the navbar */
+  z-index: 0;
   height: 100svh;
 }
 
@@ -188,11 +227,23 @@
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transform: scale(1.1);
+  transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .slide.active {
   opacity: 1;
+  transform: scale(1);
+}
+
+.slide.prev {
+  transform: scale(0.95) translateX(-5%);
+  opacity: 0;
+}
+
+.slide.next {
+  transform: scale(0.95) translateX(5%);
+  opacity: 0;
 }
 
 .slide-image-container {
@@ -214,9 +265,10 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.2),
-    rgba(0, 0, 0, 0.4)
+    135deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.6) 100%
   );
 }
 
@@ -231,13 +283,22 @@
   width: 90%;
   z-index: 2;
   padding: 0 1rem;
+  transform: translate(-50%, -50%) translateY(30px);
+  opacity: 0;
+  transition: all 0.8s ease-out 0.3s;
+}
+
+.slide.active .slide-content {
+  transform: translate(-50%, -50%) translateY(0);
+  opacity: 1;
 }
 
 .slide-content h2 {
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  letter-spacing: -0.02em;
 }
 
 .slide-content p {
@@ -245,29 +306,29 @@
   line-height: 1.6;
   margin: 0 auto 1rem;
   max-width: 600px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  opacity: 0.9;
 }
 
 .apply-now {
   display: inline-block;
   font-size: 1rem;
-  padding: 0.75rem 1.25rem;
-  background: rgba(41, 127, 185, 0.63);
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   color: white;
-  border: none;
-  border-radius: 0.5rem;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
   margin-top: 1rem;
 }
 
 .apply-now:hover {
-  background: rgba(17, 50, 70, 0.85);
+  background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .slide-arrows {
@@ -284,8 +345,9 @@
 .arrow {
   width: 50px;
   height: 50px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: none;
   color: white;
   font-size: 1.5rem;
   border-radius: 50%;
@@ -293,12 +355,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.1s ease;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.slideshow:hover .arrow {
+  opacity: 1;
 }
 
 .arrow:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
 }
 
 /* About Section */

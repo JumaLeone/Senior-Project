@@ -147,7 +147,7 @@
             </div>
             <div class="slide-content">
                 <h2>Affordable Housing</h2>
-                <p>Find quality homes at affordable prices, making homeownership accessible to everyone.</p>
+                <p>Own the home you live in through the Tenant Purchase System — offering quality housing at affordable prices and making homeownership a reality for long-term tenants.</p>
                 <a href="searching.php" class="btn apply-now">Apply Now</a>
             </div>
         </div>
@@ -161,7 +161,7 @@
         <div class="about-content">
             <div class="about-card">
                 <h3>Our Mission</h3>
-                <p>To provide accessible and affordable housing solutions while building sustainable communities.</p>
+                <p>To make homeownership accessible for tenants through affordable purchase options while fostering sustainable communities.</p>
             </div>
             <div class="about-card">
                 <h3>Our Vision</h3>

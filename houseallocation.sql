@@ -109,7 +109,7 @@ VALUES
 ('Apartment', '300,000', 'Eldoret, Elgon View', 32, '1-2 persons', 'Serene neighborhood close to Eldoret Club and hospitals.', 13000),
 ('Residential Lot', '220,000', 'Turbo, Township', 50, 'N/A (Lot only)', 'Gated plot close to Turbo Town center and market.', 10000),
 ('Condo', '350,000', 'Eldoret, West Indies', 35, '1-2 persons', 'Secure area near Uasin Gishu Primary and sports clubs.', 14000),
-('House and Lot', '390,000', 'Moiâ€™s Bridge, Township', 60, '3-4 persons', 'Growing estate near Moiâ€™s Bridge trading center.', 25000),
+('House and Lot', '390,000', 'Moi’s Bridge, Township', 60, '3-4 persons', 'Growing estate near Moi’s Bridge trading center.', 25000),
 ('Apartment', '330,000', 'Eldoret, Maili Nne', 40, '2-3 persons', 'Near University of Eldoret access route and shopping zones.', 18000),
 ('Commercial', '380,000', 'Burnt Forest, Market Area', 70, 'N/A (Commercial)', 'Prime space near the matatu terminus and produce market.', 20000),
 ('Residential Lot', '240,000', 'Kesses, Moi University Vicinity', 80, 'N/A (Lot only)', 'Quiet area ideal for development near Moi University.', 12000),
