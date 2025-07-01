@@ -4,6 +4,11 @@ require_once __DIR__ . '/vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// --- Enable error reporting for debugging ---
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // --- Database Connection ---
 $serverName = "TITANIUM-VORTEX\\SQLEXPRESS";
 $connectionOptions = [
@@ -31,8 +36,7 @@ try {
             FROM payments p
             JOIN properties pr ON p.property_id = pr.id
             WHERE p.invoice_id = ?";
-
-    $stmt = sqlsrv_query($conn, $sql, [$invoiceId]);
+    $stmt = sqlsrv_query($conn, $sql, [$invoiceId]); // ✅ Fixed here
     if (!$stmt) {
         throw new Exception("Database query failed: " . print_r(sqlsrv_errors(), true));
     }
@@ -58,28 +62,28 @@ try {
     $mpdf->SetTitle("Receipt $invoiceId");
     $mpdf->WriteHTML($receiptHtml);
 
-    // --- Capture PDF output as string (for email) ---
+    // --- Capture PDF as string for email attachment ---
     $pdfContent = $mpdf->Output('', 'S');
 
-    // --- Send receipt via email ---
-    $buyerEmail = $payment['sent_to'] ?? 'fallback@example.com'; // Update if your column is named differently
+    // --- Email Receipt ---
+    $buyerEmail = $payment['sent_to'] ?? 'fallback@example.com';
 
     $mail = new PHPMailer(true);
     try {
-        $mail->SMTPDebug = 2; // Log debug info to error_log
+        $mail->SMTPDebug = 2;
         $mail->Debugoutput = 'error_log';
 
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'jumaleone42@gmail.com';
-        $mail->Password = 'owatlklxodvhvxze'; // App password with NO SPACES
+        $mail->Password = 'owatlklxodvhvxze'; // App password
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
         $mail->setFrom('jumaleone42@gmail.com', 'KeyNest');
         $mail->addAddress($buyerEmail);
-        $mail->addBCC('jumaleone42@gmail.com'); // You get a copy
+        $mail->addBCC('jumaleone42@gmail.com');
 
         $mail->isHTML(true);
         $mail->Subject = 'Your Payment Receipt - KeyNest Properties';
@@ -94,21 +98,28 @@ try {
         $mail->addStringAttachment($pdfContent, "Receipt_$invoiceId.pdf");
         $mail->send();
         error_log("Receipt email sent to $buyerEmail");
+
+        // --- Send SMS to buyer ---
+        $buyerPhone = $payment['phone'] ?? null;
+        if ($buyerPhone) {
+            $smsMessage = "Hello, your payment receipt (Invoice ID: $invoiceId) has been sent to your email. Thank you for choosing KeyNest.";
+            sendSMS($buyerPhone, $smsMessage);
+            error_log("SMS sent to $buyerPhone");
+        }
+
     } catch (Exception $e) {
         error_log("PHPMailer Error: " . $mail->ErrorInfo);
     }
 
-    // --- Output PDF to browser ---
+    // --- Output the receipt to browser for download ---
     $mpdf->Output("receipt_$invoiceId.pdf", 'D');
     exit;
 
 } catch (Exception $e) {
-    die("<h2>Error Generating Receipt</h2>
-        <p>{$e->getMessage()}</p>
-        <p>Please contact support with this error message.</p>");
+    die("<h2>Error Generating Receipt</h2><p>{$e->getMessage()}</p>");
 }
 
-// --- HTML Receipt Generator Function ---
+// --- Receipt HTML Builder ---
 function generateReceiptHtml(array $payment, string $invoiceId): string {
     $date = isset($payment['created_at']) ? 
         date_format($payment['created_at'], 'M j, Y H:i') : 
@@ -142,44 +153,54 @@ function generateReceiptHtml(array $payment, string $invoiceId): string {
         <div class="logo">KeyNest Properties</div>
         <div class="title">Payment Receipt</div>
     </div>
-    
     <div class="divider"></div>
-    
     <div class="details">
-        <div class="row">
-            <span class="label">Invoice ID:</span>
-            <span>$invoiceId</span>
-        </div>
-        <div class="row">
-            <span class="label">Date:</span>
-            <span>$date</span>
-        </div>
-        <div class="row">
-            <span class="label">Amount:</span>
-            <span>KES $amount</span>
-        </div>
-        <div class="row">
-            <span class="label">Property:</span>
-            <span>$propertyType in $location</span>
-        </div>
-        <div class="row">
-            <span class="label">Phone:</span>
-            <span>$phone</span>
-        </div>
-        <div class="row">
-            <span class="label">Status:</span>
-            <span>$status</span>
-        </div>
+        <div class="row"><span class="label">Invoice ID:</span><span>$invoiceId</span></div>
+        <div class="row"><span class="label">Date:</span><span>$date</span></div>
+        <div class="row"><span class="label">Amount:</span><span>KES $amount</span></div>
+        <div class="row"><span class="label">Property:</span><span>$propertyType in $location</span></div>
+        <div class="row"><span class="label">Phone:</span><span>$phone</span></div>
+        <div class="row"><span class="label">Status:</span><span>$status</span></div>
     </div>
-    
     <div class="divider"></div>
-    
     <div class="footer">
         <p>Thank you for your business!</p>
-        <p>This is a system generated receipt. Please contact support for any issues.</p>
+        <p>This is a system-generated receipt. Please contact support for any issues.</p>
     </div>
 </body>
 </html>
 HTML;
+}
+
+// --- SMS Sending Function ---
+function sendSMS($phone, $message) {
+    $apiUrl = "https://api.intasend.com/v1/sms/send"; // Or your SMS provider
+    $token = "Bearer ISSecretKey_live_9d79df69-1af4-4a7d-9ba9-ffe1caff70f7";
+
+    $payload = json_encode([
+        "to" => $phone,
+        "message" => $message
+    ]);
+
+    $headers = [
+        "Authorization: Bearer $token",
+        "Content-Type: application/json"
+    ];
+
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if (curl_errno($ch)) {
+        error_log("SMS cURL Error: " . curl_error($ch));
+    } elseif ($httpCode >= 400) {
+        error_log("SMS API Error ($httpCode): $response");
+    }
+
+    curl_close($ch);
 }
 ?>

@@ -62,13 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log("DB insert failed: " . print_r(sqlsrv_errors(), true));
             }
 
-            // Generate a simple receipt (HTML only)
-            generateReceipt(
-                $responseData['invoice']['invoice_id'],
-                $amount,
-                $phone_number,
-                $email
-            );
+            // Send Receipt Email and SMS
+            sendAutoReceipt($responseData['invoice']['invoice_id'], $email, $phone_number);
 
             // Redirect to success
             header("Location: payment_success.php?invoice_id=" . $responseData['invoice']['invoice_id']);
@@ -84,50 +79,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// --- Receipt Generator Function ---
-function generateReceipt($invoiceId, $amount, $phone, $email)
-{
+// --- Send receipt email and SMS using receipt.php logic ---
+function sendAutoReceipt($invoiceId, $buyerEmail, $buyerPhone) {
     global $conn;
 
-    $receiptContent = "
-        <html>
-        <body>
-            <h2>Payment Receipt</h2>
-            <p><strong>Invoice ID:</strong> $invoiceId</p>
-            <p><strong>Amount:</strong> KES " . number_format($amount, 2) . "</p>
-            <p><strong>Phone:</strong> $phone</p>
-            <p><strong>Date:</strong> " . date('Y-m-d H:i:s') . "</p>
-            <p><strong>Status:</strong> Pending Confirmation</p>
-        </body>
-        </html>
-    ";
+    $sql = "SELECT TOP 1 p.*, pr.property_type, pr.location 
+            FROM payments p
+            JOIN properties pr ON p.property_id = pr.id
+            WHERE p.invoice_id = ?";
+    $stmt = sqlsrv_query($conn, $sql, [$invoiceId]);
+    $payment = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    if (!$payment) return;
 
-    // Save receipt in DB (optional table: receipts)
-    $sql = "INSERT INTO receipts (invoice_id, content, sent_to) VALUES (?, ?, ?)";
-    $params = [$invoiceId, $receiptContent, $email];
-    sqlsrv_query($conn, $sql, $params);
+    // Generate HTML
+    $date = isset($payment['created_at']) ? date_format($payment['created_at'], 'M j, Y H:i') : date('M j, Y H:i');
+    $amount = isset($payment['amount']) ? number_format($payment['amount'], 2) : '0.00';
+    $propertyType = htmlspecialchars($payment['property_type'] ?? 'Unknown');
+    $location = htmlspecialchars($payment['location'] ?? 'Unknown');
+    $status = htmlspecialchars($payment['status'] ?? 'Unknown');
+    $receiptHtml = <<<HTML
+    <html><body>
+        <h2>KeyNest Properties</h2>
+        <h3>Payment Receipt</h3>
+        <p><strong>Invoice ID:</strong> $invoiceId</p>
+        <p><strong>Date:</strong> $date</p>
+        <p><strong>Amount:</strong> KES $amount</p>
+        <p><strong>Property:</strong> $propertyType in $location</p>
+        <p><strong>Status:</strong> $status</p>
+    </body></html>
+    HTML;
 
-    // Optionally send via email
+    // PDF
+    $mpdf = new \Mpdf\Mpdf([ 'format' => 'A5' ]);
+    $mpdf->WriteHTML($receiptHtml);
+    $pdfContent = $mpdf->Output('', 'S');
+
+    // Email
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host = 'your-smtp-server.com';
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'noreply@yourdomain.com';
-        $mail->Password = 'yourpassword';
+        $mail->Username = 'jumaleone42@gmail.com';
+        $mail->Password = 'owatlklxodvhvxze';
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
-        $mail->setFrom('noreply@yourdomain.com', 'KeyNest');
-        $mail->addAddress($email);
-        $mail->isHTML(true);
-        $mail->Subject = 'Payment Receipt - Invoice ' . $invoiceId;
-        $mail->Body    = $receiptContent;
+        $mail->setFrom('jumaleone42@gmail.com', 'KeyNest');
+        $mail->addAddress($buyerEmail);
+        $mail->Subject = "Payment Receipt - Invoice #$invoiceId";
+        $mail->Body = "Attached is your payment receipt.";
+        $mail->addStringAttachment($pdfContent, "Receipt_$invoiceId.pdf");
         $mail->send();
     } catch (Exception $e) {
-        error_log("Receipt email failed: " . $mail->ErrorInfo);
+        error_log("Email send error: " . $mail->ErrorInfo);
     }
 
-    // Optionally send SMS here too (via Africa's Talking, Twilio, etc.)
+    // SMS
+    $smsMessage = "Hello, your KeyNest receipt (Invoice ID: $invoiceId) has been sent to your email.";
+    $payload = json_encode([ "to" => $buyerPhone, "message" => $smsMessage ]);
+    $headers = [
+        "Authorization: Bearer ISSecretKey_live_9d79df69-1af4-4a7d-9ba9-ffe1caff70f7",
+        "Content-Type: application/json"
+    ];
+    $ch = curl_init("https://api.intasend.com/v1/sms/send");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    if (curl_errno($ch)) error_log("SMS cURL Error: " . curl_error($ch));
+    curl_close($ch);
 }
 ?>
