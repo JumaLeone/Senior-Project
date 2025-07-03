@@ -128,7 +128,7 @@ SELECT * FROM feedback;
 SELECT * FROM payments;
 
 
-DELETE FROM buyers
+DELETE FROM payments
 SELECT occupation FROM buyers;
 
 
