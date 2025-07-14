@@ -1,0 +1,9 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "phpmailer/phpmailer": "^6.10",
+        "mpdf/mpdf": "8.2",
+        "dompdf/dompdf": "^3.1",
+        "africastalking/africastalking": "^3.0"
+    }
+}

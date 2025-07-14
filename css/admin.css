@@ -1,106 +1,310 @@
+/* Base Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #8695aa;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #afafaf;
+  min-height: 100vh;
 }
 
-h2 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 30px;
+h1, h2, h3 {
+  color: #000000;
+  text-align: center;
+  margin-bottom: 30px;
 }
+
+/* Card Styling (Used for Sections) */
+.card {
+  background: white;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  overflow: hidden;
+  display: block !important; /* Force display */
+  visibility: visible !important; /* Ensure visibility */
+}
+
+.card-header {
+  background-color: #34495e !important;
+  color: white !important;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.card-body {
+  padding: 20px;
+  display: block !important;
+}
+
 
 /* Form Styling */
 #addPropertyForm {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
 #addPropertyForm input,
 #addPropertyForm select,
 #addPropertyForm textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+#addPropertyForm input:focus,
+#addPropertyForm select:focus,
+#addPropertyForm textarea:focus {
+  border-color: #3498db;
+  outline: none;
 }
 
 #addPropertyForm button {
-    background-color: #3498db;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 16px;
+  background-color: #3498db !important;
+  color: white !important;
+  padding: 12px 20px;
+  border: none !important;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
 #addPropertyForm button:hover {
-    background-color: #2980b9;
+  background-color: #2980b9 !important;
 }
 
-/* Table Styling */
-.property-list {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* Table Styling - General */
+.table {
+  width: 100% !important;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  display: table !important; /* Force table display */
 }
 
+.table th {
+  background-color: #3498db !important;
+  color: white !important;
+  padding: 12px;
+  border: 1px solid #dee2e6;
+  text-align: left;
+}
+
+.table td {
+  padding: 12px;
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+  background-color: white;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa !important;
+}
+
+.table tbody tr:hover {
+  background-color: #e9ecef !important;
+}
+
+/* Property Table Specific */
 #propertyTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+  display: table !important;
+  width: 100% !important;
 }
 
 #propertyTable th {
-    background-color: #3498db;
-    color: white;
-    padding: 12px;
+  background-color: #3498db !important;
+  color: white !important;
 }
 
-#propertyTable td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+
+/* Table Responsive Wrapper */
+.table-responsive {
+    display: block !important;
 }
 
-/* Button Styling */
-.property-list button {
-    padding: 8px 15px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.alert-info {
+    display: block !important;
+    margin: 20px 0 !important;
 }
 
-.property-list button:nth-child(1) {
-    background-color: #2ecc71;
-    color: white;
+/* Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.
+
+/* Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-block;
+  text-transform: uppercase;
 }
 
-.property-list button:nth-child(2) {
-    background-color: #e74c3c;
-    color: white;
+.status-unread {
+  background-color: #f39c12;
+  color: white;
 }
 
-.property-list button:hover {
-    opacity: 0.9;
+.status-read {
+  background-color: #27ae60;
+  color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+  white-space: nowrap;
+}
+
+.btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.btn i {
+  margin-right: 5px;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+/* Button Color Overrides */
+.btn-warning {
+  background-color: #f39c12 !important;
+  border-color: #f39c12 !important;
+  color: white !important;
+}
+
+.btn-warning:hover {
+  background-color: #e67e22 !important;
+  border-color: #e67e22 !important;
+}
+
+.btn-danger {
+  background-color: #e74c3c !important;
+  border-color: #e74c3c !important;
+  color: white !important;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b !important;
+  border-color: #c0392b !important;
+}
+
+.btn-success {
+  background-color: #27ae60 !important;
+  border-color: #27ae60 !important;
+  color: white !important;
+}
+
+.btn-success:hover {
+  background-color: #229954 !important;
+  border-color: #229954 !important;
+}
+
+.btn-primary {
+  background-color: #3498db !important;
+  border-color: #3498db !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9 !important;
+  border-color: #2980b9 !important;
 }
 
 /* SweetAlert Customization */
 .swal2-popup {
-    font-size: 14px;
+  font-size: 14px;
+  border-radius: 8px;
 }
 
-.swal2-input, .swal2-textarea {
-    margin: 10px auto !important;
-    width: 90% !important;
+.swal2-title {
+  color: #2c3e50;
 }
+
+.swal2-input,
+.swal2-textarea,
+.swal2-select {
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  margin: 10px auto !important;
+  width: 90% !important;
+  transition: border-color 0.3s;
+}
+
+.swal2-input:focus,
+.swal2-textarea:focus,
+.swal2-select:focus {
+  border-color: #3498db !important;
+  outline: none;
+}
+
+/* DataTables Styling */
+.dataTables_wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.dataTables_filter input {
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 5px 10px !important;
+}
+
+.dataTables_length select {
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  padding: 5px !important;
+}
+
+.dataTables_info,
+.dataTables_paginate {
+  padding-top: 15px !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 15px;
+  }
+  
+  .table th, 
+  .table td {
+    padding: 8px;
+  }
+  
+  .action-buttons .btn {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+  }
+  
+ 
+  
+  .dataTables_wrapper {
+    padding: 15px;
+  }
+}
+
+/* Empty State Styling */

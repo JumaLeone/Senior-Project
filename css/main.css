@@ -1,111 +1,112 @@
-*{
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-weight: 700;
+* {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-weight: 700;
 }
 
-body{
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
 }
 
-.navbar{
-    display: flex;
-    flex-direction: row;
-    gap: 40px;
-    justify-content: end;
-    align-items: center;
-    padding-right: 100px;
-    background-color: #45c545;
-    height: 11vh;
+.navbar {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  justify-content: end;
+  align-items: center;
+  padding-right: 100px;
+  background-color: #45c545;
+  height: 11vh;
 }
 
-.navbar > a{
-    text-decoration: none;
-    color: rgb(255, 255, 255);
-    font-size: 1rem;
+.navbar > a {
+  text-decoration: none;
+  color: rgb(255, 255, 255);
+  font-size: 1rem;
 }
 
-.navbar .logo{
-    margin: auto;
+.navbar .logo {
+  margin: auto;
 }
 
-.navbar > img{
-    position: relative;
-    right: 60%;
+.navbar > img {
+  position: relative;
+  right: 60%;
 }
 
-.carousel-caption h1, .carousel-caption p {
+.carousel-caption h1,
+.carousel-caption p {
   color: black;
 }
 
 .containers {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 .containers > h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 2rem;
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
 }
 .property-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 .property-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s ease;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 .property-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 .property-image {
-    height: 200px;
-    background-size: cover;
-    background-position: center;
-    background-image: url(./img/dream.jpg);
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  background-image: url(./img/dream.jpg);
 }
 .property-details {
-    padding: 1.5rem;
+  padding: 1.5rem;
 }
 .property-type {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
 }
 .property-location {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 .property-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 .property-info span {
-    font-size: 0.9rem;
-    color: #666;
+  font-size: 0.9rem;
+  color: #666;
 }
 .buy-btn {
-    display: block;
-    width: 100%;
-    padding: 0.8rem;
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #4caf50;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 .buy-btn:hover {
-    background-color: #45a049;
+  background-color: #45a049;
 }
